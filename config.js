@@ -4,11 +4,18 @@ module.exports = {
     fcm_api_key: 'AAAA8DqEKz4:APA91bFAUQyFFHh9lCioSr2VZc2mhaDjvqt-J8B3-lRzyxnmcHj42X50ibVg_Eo7rdiCXLfmTeOYMz6F4kDSc01GhBdT5G9W_W1gYi0s3q9Qn1GbhLwRktxW35cM4vujR4e_RkwEvoJz',
     db_schemas: [
         {
+            file: './post_schema',
+            collection: 'post',
+            schemaName: 'PostSchema',
+            modelName: 'PostModel'
+        },
+        {
             file: './device_schema',
             collection: 'devices',
             schemaName: 'DeviceSchema',
             modelName: 'DeviceModel'
         },
+
 
         {
             file: './buy_software_info_schema',
@@ -45,6 +52,31 @@ module.exports = {
 	],
 
     route_info: [
+
+        {
+            file: './post',
+            path: '/process/addpost',
+            method: 'addpost',
+            type: 'post'
+        }
+        , {
+            file: './post',
+            path: '/process/showpost/:id',
+            method: 'showpost',
+            type: 'get'
+        }
+        , {
+            file: './post',
+            path: '/process/listpost',
+            method: 'listpost',
+            type: 'post'
+        }
+        , {
+            file: './post',
+            path: '/process/listpost',
+            method: 'listpost',
+            type: 'get'
+        },
         {
             file: './device',
             path: '/process/adddevice',
