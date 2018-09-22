@@ -4,7 +4,10 @@ const mongoose = require('mongoose');
 var Schema = {};
 Schema.createSchema = function (mongoose) {
     var UserSchema = mongoose.Schema({
-
+        seq: {
+            type: Number,
+            default: 0
+        },
         name: {
             type: String,
             default: ''
@@ -42,6 +45,11 @@ Schema.createSchema = function (mongoose) {
             default: Date.now
         }
 
+    });
+        UserSchema.static('findByEmail', function (post_nickname, callback) {
+        return this.find({
+            nickname: post_nickname
+        }).lean().exec(callback);
     });
     UserSchema.static('findByPhone', function (phone, callback) {
         return this.find({
