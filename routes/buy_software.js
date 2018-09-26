@@ -193,7 +193,7 @@ var info_seq = function (req, res, next) { //info/:seq
                         res.end();
                         return;
                     }
-                    if (results.length == 0) return callback("갑없음")
+                    if (results.length == 0) return callback("값없음")
                     callback(null, results); //info내용1개 반환하는듯
                 })
             },
@@ -499,6 +499,64 @@ function (endresults, callback) {
         }
     }
 }
+var addcomment = function (req, res) {
+    console.log('addcomment 호출됨');
+
+    var paramId = req.body.postId || req.query.postId;
+    var paramContents = req.body.contents || req.query.contents;
+    var paramWriter = req.body.writer || req.query.writer;
+
+    console.log('넣을것 : ' + paramId + ', ' + paramContents + ', ' +
+        paramWriter);
+
+    var database = req.app.get('database');
+
+    // �뜲�씠�꽣踰좎씠�뒪 媛앹껜媛� 珥덇린�솕�맂 寃쎌슦
+    if (database.db) {
+
+        // 1. �븘�씠�뵒瑜� �씠�슜�빐 �궗�슜�옄 寃��깋
+        database.SoftwareInfoModel.findByIdAndUpdate(paramId, {
+                '$push': {
+                    'comments': {
+                        'contents': paramContents,
+                        'writer': paramWriter
+                    }
+                }
+            }, {
+                new: true,
+                upsert: true
+            },
+            function (err, results) {
+                if (err) {
+                    console.log("에러여기?")
+                    console.error('寃뚯떆�뙋 �뙎湲� 異붽? 以� �뿉�윭 諛쒖깮 : ' + err.stack);
+
+                    res.writeHead('200', {
+                        'Content-Type': 'text/html;charset=utf8'
+                    });
+                    res.write('<h2>寃뚯떆�뙋 �뙎湲� 異붽? 以� �뿉�윭 諛쒖깮</h2>');
+                    res.write('<p>' + err.stack + '</p>');
+                    res.end();
+
+                    return;
+                }
+
+                console.log("성공인건가 글씨가 깨져서 잘은 모르겠지만 성공같습니당~!@");
+                console.log('댓글저장성공 : ' + paramId);
+                console.log("여기?")
+                return res.sendStatus(200);
+                //return res.redirect('/process/showpost/' + paramId);
+            });
+
+    } else {
+        res.writeHead('200', {
+            'Content-Type': 'text/html;charset=utf8'
+        });
+        res.write('<h2>�뜲�씠�꽣踰좎씠�뒪 �뿰寃� �떎�뙣</h2>');
+        res.end();
+    }
+
+};
 //////////////////////////////////////////////////내부함수/////////////////////////////////////////////
 var addfoodinfo = function (database, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, callback) {
     console.log('addinfo 호출됨.');
@@ -556,3 +614,4 @@ module.exports.info = info;
 module.exports.info_image = info_image;
 module.exports.info_seq = info_seq;
 module.exports.list = list;
+module.exports.addcomment = addcomment;

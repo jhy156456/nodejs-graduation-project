@@ -153,7 +153,7 @@ Emitted 'error' event at:
                     });
                 });
                 */
-                console.log("문의사항 값:"+JSON.stringify(results))
+                console.log("문의사항 값:" + JSON.stringify(results))
                 res.status(200).json(results);
                 res.end();
             } else {
@@ -180,7 +180,7 @@ var showpost = function (req, res) {
 
     // URL 파라미터로 전달됨
     var paramId = req.body.id || req.query.id || req.params.id;
-
+    var paramSeq = req.body.member_seq || req.query.member_seq || req.params.member_seq;
     console.log('요청 파라미터 : ' + paramId);
 
 
@@ -204,6 +204,19 @@ var showpost = function (req, res) {
             }
 
             if (results) {
+                console.log("너가 선택한것 : " + JSON.stringify(results))
+                console.log('trying to update hits.');
+
+                database.PostModel.incrHits(results._doc._id, function (err2, results2) {
+                    console.log('incrHits executed.');
+
+                    if (err2) {
+                        console.log('incrHits �떎�뻾 以� �뿉�윭 諛쒖깮.');
+                        console.dir(err2);
+                        return;
+                    }
+
+                });
                 res.status(200).json(results);
                 res.end();
             } else {
@@ -223,7 +236,66 @@ var showpost = function (req, res) {
     }
 
 };
+var addcomment = function (req, res) {
+    console.log('addcomment 호출됨');
 
+    var paramId = req.body.postId || req.query.postId;
+    var paramContents = req.body.contents || req.query.contents;
+    var paramWriter = req.body.writer || req.query.writer;
+
+    console.log('넣을것 : ' + paramId + ', ' + paramContents + ', ' +
+        paramWriter);
+
+    var database = req.app.get('database');
+
+    // �뜲�씠�꽣踰좎씠�뒪 媛앹껜媛� 珥덇린�솕�맂 寃쎌슦
+    if (database.db) {
+
+        // 1. �븘�씠�뵒瑜� �씠�슜�빐 �궗�슜�옄 寃��깋
+        database.PostModel.findByIdAndUpdate(paramId, {
+                '$push': {
+                    'comments': {
+                        'contents': paramContents,
+                        'writer': paramWriter
+                    }
+                }
+            }, {
+                new: true,
+                upsert: true
+            },
+            function (err, results) {
+                if (err) {
+                    console.log("에러여기?")
+                    console.error('寃뚯떆�뙋 �뙎湲� 異붽? 以� �뿉�윭 諛쒖깮 : ' + err.stack);
+
+                    res.writeHead('200', {
+                        'Content-Type': 'text/html;charset=utf8'
+                    });
+                    res.write('<h2>寃뚯떆�뙋 �뙎湲� 異붽? 以� �뿉�윭 諛쒖깮</h2>');
+                    res.write('<p>' + err.stack + '</p>');
+                    res.end();
+
+                    return;
+                }
+
+                console.log("성공인건가 글씨가 깨져서 잘은 모르겠지만 성공같습니당~!@");
+                console.log('댓글저장성공 : ' + paramId);
+                console.log("여기?")
+                return res.sendStatus(200);
+                //return res.redirect('/process/showpost/' + paramId);
+            });
+
+    } else {
+        res.writeHead('200', {
+            'Content-Type': 'text/html;charset=utf8'
+        });
+        res.write('<h2>�뜲�씠�꽣踰좎씠�뒪 �뿰寃� �떎�뙣</h2>');
+        res.end();
+    }
+
+};
 module.exports.listpost = listpost;
 module.exports.addpost = addpost;
 module.exports.showpost = showpost;
+module.exports.addpost = addpost;
+module.exports.addcomment = addcomment;

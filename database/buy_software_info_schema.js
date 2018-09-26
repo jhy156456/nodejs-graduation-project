@@ -1,5 +1,5 @@
 var Schema = {};
-
+var utils = require('../utils/utils');
 Schema.createSchema = function (mongoose) {
 
     // 스키마 정의
@@ -57,6 +57,26 @@ Schema.createSchema = function (mongoose) {
             type: Number,
             default: 0
         },
+         comments: [{ // 댓글
+            contents: {
+                type: String,
+                trim: true,
+                'default': ''
+            }, // �뙎湲� �궡�슜
+            writer: {
+                type: String,
+                trim: true,
+                'default': ''
+            },
+            created_at: {
+                type: Date,
+                'default': Date.now
+            },
+            comment_like: {
+                type: Number,
+                'default': 0
+            }
+	    }],
         post_comment_updated_datetime: {
             type: Date
         },
@@ -89,7 +109,7 @@ Schema.createSchema = function (mongoose) {
             default: Date.now
         },
         post_member_icon_filename: {
-            type :String,
+            type: String,
             default: ""
         }
     });
@@ -97,7 +117,28 @@ Schema.createSchema = function (mongoose) {
     SoftwareInfoSchema.index({
         geometry: '2dsphere'
     });
+    SoftwareInfoSchema.methods = {
+        addComment: function (user, comment, callback) { // 댓글 추가
+            this.comment.push({
+                contents: comment.contents,
+                writer: user._id
+            });
 
+            this.save(callback);
+        },
+        removeComment: function (id, callback) { // 댓글 삭제
+            var index = utils.indexOf(this.comments, {
+                id: id
+            });
+            if (~index) {
+                this.comments.splice(index, 1);
+            } else {
+                return callback('ID [' + id + '] 를 가진 댓글 객체를 찾을 수 없습니다.');
+            }
+
+            this.save(callback);
+        }
+    }
 
     //등록순 정렬
     SoftwareInfoSchema.static('findBySeqandReg_date', function (seq, start_page, LOADING_SIZE, callback) {

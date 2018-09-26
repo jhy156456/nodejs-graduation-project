@@ -52,7 +52,7 @@ module.exports = {
 	],
 
     route_info: [
-
+//Doit 게시판 구현
         {
             file: './post',
             path: '/process/addpost',
@@ -76,7 +76,14 @@ module.exports = {
             path: '/process/listpost',
             method: 'listpost',
             type: 'get'
+        }, {
+            file: './post',
+            path: '/process/addcomment',
+            method: 'addcomment',
+            type: 'post'
         },
+
+        //Doit 알림구현
         {
             file: './device',
             path: '/process/adddevice',
@@ -101,7 +108,7 @@ module.exports = {
             method: 'sendall',
             type: 'post'
         }
-
+//베스트푸드책 구현
         , {
             file: './member',
             path: '/member/:email',
@@ -156,6 +163,11 @@ module.exports = {
             path: '/food/postedlist',
             method: 'postedList',
             type: 'get'
+        }, {
+            file: './buy_software',
+            path: '/food/addcomment',
+            method: 'addcomment',
+            type: 'post'
         }
         , {
             file: './buy_keep',
