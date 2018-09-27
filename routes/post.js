@@ -111,8 +111,8 @@ var listpost = function (req, res) {
     if (database.db) {
         // 1. 글 리스트
         var options = {
-            page: paramPage,
-            perPage: paramPerPage
+            start_page: start_page,
+            LOADING_SIZE: LOADING_SIZE
         }
 
         database.PostModel.list(options, function (err, results) {

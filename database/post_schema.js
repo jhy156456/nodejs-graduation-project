@@ -125,8 +125,8 @@ SchemaObj.createSchema = function (mongoose) {
                 .sort({
                     'created_at': -1
                 })
-                .limit(Number(options.perPage))
-                .skip(options.perPage * options.page)
+                .limit(Number(options.LOADING_SIZE))
+                .skip(options.start_page)
                 .exec(callback);
         },
         incrHits: function (id, callback) {

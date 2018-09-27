@@ -164,7 +164,7 @@ Schema.createSchema = function (mongoose) {
         console.log('SoftwareInfoSchema의 findByreg_date 호출됨.');
         return this.find({}).sort({
             "reg_date": -1
-        }).skip(start_page).limit(LOADING_SIZE).lean().exec(callback);
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
     });
 
     // 즐겨찾기 정렬
@@ -172,7 +172,7 @@ Schema.createSchema = function (mongoose) {
         console.log('bestfood_info_schema의 findBykeep_cnt 호출됨.');
         return this.find({}).sort({
             "keep_cnt": -1
-        }).skip(start_page).limit(LOADING_SIZE).lean().exec(callback);
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
     });
 
 
