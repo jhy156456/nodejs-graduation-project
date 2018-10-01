@@ -101,7 +101,7 @@ var info = function (req, res, next) { //info
         return res.sendStatus(400);
     }
     var member_seq = req.body.member_seq;
-    var post_member_icon_filename = req.body.postMemberIconFilename;
+    var post_member_icon_filename = req.body.post_member_icon_filename;
     var name = req.body.name;
     var tel = req.body.tel;
     var address = req.body.address;
@@ -114,7 +114,7 @@ var info = function (req, res, next) { //info
     var database = req.app.get('database');
 
     if (database.db) {
-        addfoodinfo(database, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, function (err, result) {
+        addfoodinfo(database, post_member_icon_filename, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, function (err, result) {
             if (err) {
                 console.error('맛집정보 저장 중 에러 발생 : ' + err.stack);
                 console.log('<h2>맛집정보 저장 중 에러 발생</h2>');
@@ -558,10 +558,11 @@ var addcomment = function (req, res) {
 
 };
 //////////////////////////////////////////////////내부함수/////////////////////////////////////////////
-var addfoodinfo = function (database, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, callback) {
+var addfoodinfo = function (database, post_member_icon_filename, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, callback) {
     console.log('addinfo 호출됨.');
 
     var info = new database.SoftwareInfoModel({
+        post_member_icon_filename: post_member_icon_filename,
         member_seq: member_seq,
         name: name,
         tel: tel,

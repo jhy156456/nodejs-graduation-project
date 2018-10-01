@@ -1,0 +1,141 @@
+[{
+    "version": "4.01",
+    "TransactionId": "701fea22-d24f-442c-8e97-163faefdb086",
+    "Version": "4.01",
+    "QueryStatusCodeValue": "200",
+    "FeatureMatchingResultType": "Success",
+    "FeatureMatchingResultCount": "5",
+    "TimeTaken": "0.625006",
+    "ExceptionOccured": "False",
+    "Exception": "",
+    "InputAddress": {
+        "StreetAddress": "35 E 125 ST New York NY ",
+        "City": "New York",
+        "State": "NY",
+        "Zip": ""
+    },
+    "OutputGeocodes": [{
+        "OutputGeocode": {
+            "Latitude": "40.805958",
+            "Longitude": "-73.940763",
+            "NAACCRGISCoordinateQualityCode": "00",
+            "NAACCRGISCoordinateQualityType": "AddressPoint",
+            "MatchScore": "97.3372781065089",
+            "MatchType": "Relaxed",
+            "FeatureMatchingResultType": "Success",
+            "FeatureMatchingResultCount": "1",
+            "FeatureMatchingGeographyType": "Parcel",
+            "RegionSize": "0",
+            "RegionSizeUnits": "Meters",
+            "MatchedLocationType": "LOCATION_TYPE_STREET_ADDRESS",
+            "ExceptionOccured": "False",
+            "Exception": "",
+            "ErrorMessage": ""
+        }
+    }]
+}, {
+    "version": "4.01",
+    "TransactionId": "c7b60c13-c8f9-4504-92a5-5a893f93bb21",
+    "Version": "4.01",
+    "QueryStatusCodeValue": "200",
+    "FeatureMatchingResultType": "Success",
+    "FeatureMatchingResultCount": "5",
+    "TimeTaken": "0.6562505",
+    "ExceptionOccured": "False",
+    "Exception": "",
+    "InputAddress": {
+        "StreetAddress": "223 E 117TH ST New York NY ",
+        "City": "New York",
+        "State": "NY",
+        "Zip": ""
+    },
+    "OutputGeocodes": [{
+        "OutputGeocode": {
+            "Latitude": "40.7982106",
+            "Longitude": "-73.9382769",
+            "NAACCRGISCoordinateQualityCode": "00",
+            "NAACCRGISCoordinateQualityType": "AddressPoint",
+            "MatchScore": "97.3372781065089",
+            "MatchType": "Relaxed;Soundex",
+            "FeatureMatchingResultType": "Success",
+            "FeatureMatchingResultCount": "1",
+            "FeatureMatchingGeographyType": "Parcel",
+            "RegionSize": "0",
+            "RegionSizeUnits": "Meters",
+            "MatchedLocationType": "LOCATION_TYPE_STREET_ADDRESS",
+            "ExceptionOccured": "False",
+            "Exception": "",
+            "ErrorMessage": ""
+        }
+    }]
+}, {
+    "version": "4.01",
+    "TransactionId": "c9ba42a2-edfb-43d7-8247-0a1a3f66aef0",
+    "Version": "4.01",
+    "QueryStatusCodeValue": "200",
+    "FeatureMatchingResultType": "Success",
+    "FeatureMatchingResultCount": "5",
+    "TimeTaken": "0.4218716",
+    "ExceptionOccured": "False",
+    "Exception": "",
+    "InputAddress": {
+        "StreetAddress": "2126 2ND AVE New York NY ",
+        "City": "New York",
+        "State": "NY",
+        "Zip": ""
+    },
+    "OutputGeocodes": [{
+        "OutputGeocode": {
+            "Latitude": "40.7927121",
+            "Longitude": "-73.94069",
+            "NAACCRGISCoordinateQualityCode": "00",
+            "NAACCRGISCoordinateQualityType": "AddressPoint",
+            "MatchScore": "97.3372781065089",
+            "MatchType": "Relaxed;Soundex",
+            "FeatureMatchingResultType": "Success",
+            "FeatureMatchingResultCount": "1",
+            "FeatureMatchingGeographyType": "Parcel",
+            "RegionSize": "0",
+            "RegionSizeUnits": "Meters",
+            "MatchedLocationType": "LOCATION_TYPE_STREET_ADDRESS",
+            "ExceptionOccured": "False",
+            "Exception": "",
+            "ErrorMessage": ""
+        }
+    }]
+}, {
+    "version": "4.01",
+    "TransactionId": "c05d6a11-cf0b-48c3-86b8-2c4137d7449b",
+    "Version": "4.01",
+    "QueryStatusCodeValue": "200",
+    "FeatureMatchingResultType": "Success",
+    "FeatureMatchingResultCount": "5",
+    "TimeTaken": "0.8281258",
+    "ExceptionOccured": "False",
+    "Exception": "",
+    "InputAddress": {
+        "StreetAddress": "22 E 119TH ST New York NY ",
+        "City": "New York",
+        "State": "NY",
+        "Zip": ""
+    },
+    "OutputGeocodes": [{
+        "OutputGeocode": {
+            "Latitude": "40.8021458",
+            "Longitude": "-73.9442327",
+            "NAACCRGISCoordinateQualityCode": "00",
+            "NAACCRGISCoordinateQualityType": "AddressPoint",
+            "MatchScore": "97.3372781065089",
+            "MatchType": "Relaxed;Soundex",
+            "FeatureMatchingResultType": "Success",
+            "FeatureMatchingResultCount": "1",
+            "FeatureMatchingGeographyType": "Parcel",
+            "RegionSize": "0",
+            "RegionSizeUnits": "Meters",
+            "MatchedLocationType": "LOCATION_TYPE_STREET_ADDRESS",
+            "ExceptionOccured": "False",
+            "Exception": "",
+            "ErrorMessage": ""
+        }
+    }]
+}]

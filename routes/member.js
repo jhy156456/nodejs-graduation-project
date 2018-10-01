@@ -129,17 +129,61 @@ var member_info = function (req, res) { //router.post('/info', function(req, res
 //member/icon_upload
 var member_icon_upload = function (req, res) { //router.post('/icon_upload', function (req, res) {
     var form = new formidable.IncomingForm();
-
+    var database = req.app.get('database');
     form.on('fileBegin', function (name, file) {
         file.path = './public/member/' + file.name;
     });
 
     form.parse(req, function (err, fields, files) {
-        var sql_update = "update bestfood_member set member_icon_filename = ? where seq = ?;";
+        /*
+         var sql_update = "update bestfood_member set member_icon_filename = ? where seq = ?;";
 
-        db.get().query(sql_update, [files.file.name, fields.member_seq], function (err, rows) {
-            res.sendStatus(200);
-        });
+         db.get().query(sql_update, [files.file.name, fields.member_seq], function (err, rows) {
+             res.sendStatus(200);
+         });
+         */
+        if (database.db) {
+            database.UserModel.findByIdAndUpdate(fields.id, {
+                    '$set': {
+                        'member_icon_filename': files.file.name
+
+                    }
+                }, {
+                    new: true,
+                    upsert: true
+                },
+                function (err, results) {
+                    if (err) {
+                        console.log("에러여기?")
+                        console.error('에러내용 : ' + err.stack);
+
+                        res.writeHead('200', {
+                            'Content-Type': 'text/html;charset=utf8'
+                        });
+                        res.write('<h2>寃뚯떆�뙋 �뙎湲� 異붽? 以� �뿉�윭 諛쒖깮</h2>');
+                        res.write('<p>' + err.stack + '</p>');
+                        res.end();
+
+                        return;
+                    }
+
+                    console.log("성공인건가 글씨가 깨져서 잘은 모르겠지만 성공같습니당~!@");
+                    console.log('댓글저장성공 : ' + fields.id);
+                    console.log("여기?")
+                    return res.sendStatus(200);
+                    //return res.redirect('/process/showpost/' + paramId);
+                });
+
+        } else {
+            res.writeHead('200', {
+                'Content-Type': 'text/html;charset=utf8'
+            });
+            res.write('<h2>�뜲�씠�꽣踰좎씠�뒪 �뿰寃� �떎�뙣</h2>');
+            res.end();
+        }
+
+
+
     });
 }
 
