@@ -1,7 +1,6 @@
 module.exports = {
     server_port: 3000,
     db_url: 'mongodb://jhy156456:vmflsxj1@ds237192.mlab.com:37192/graduation_project',
-    fcm_api_key: 'AAAA8DqEKz4:APA91bFAUQyFFHh9lCioSr2VZc2mhaDjvqt-J8B3-lRzyxnmcHj42X50ibVg_Eo7rdiCXLfmTeOYMz6F4kDSc01GhBdT5G9W_W1gYi0s3q9Qn1GbhLwRktxW35cM4vujR4e_RkwEvoJz',
     db_schemas: [
         {
             file: './post_schema',
@@ -189,7 +188,7 @@ module.exports = {
         }
         ////////////////////////////////////////////로그인
 
-                        , {
+                        , { //wantMemberSeq로 원하는 멤버의 프로필 조회
             file: './loginRoutes',
             path: '/users/:seq',
             method: 'getUser',

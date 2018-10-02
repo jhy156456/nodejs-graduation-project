@@ -7,7 +7,7 @@
 
 var fcm = require('node-gcm');
 var config = require('../config.js');
-
+require('dotenv').config();
 
 var adddevice = function(req, res) {
 	console.log('device 모듈 안에 있는 adddevice 호출됨.');
@@ -225,7 +225,7 @@ var sendall = function(req, res) {
 				message.addData('type', 'text/plain');
 				message.addData('data', paramData);
 
-				var sender = new fcm.Sender(config.fcm_api_key);
+				var sender = new fcm.Sender(process.env.FCM_API_KEY);
 
 				sender.send(message, regIds, function (err, result) {
 					if (err) {

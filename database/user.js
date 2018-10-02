@@ -59,7 +59,7 @@ Schema.createSchema = function (mongoose) {
     UserSchema.static('findBySeq',function(seq,callback){
         return this.find({
             seq:seq
-        },{name:1,nickname:1}).lean().exec(callback);
+        },{name:1,nickname:1,member_icon_filename:1}).lean().exec(callback);
     });
     UserSchema.static('findByMail', function (email, callback) {
         return this.find({

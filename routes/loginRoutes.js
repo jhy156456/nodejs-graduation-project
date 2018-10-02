@@ -23,6 +23,7 @@ var getUser = function(req,res){
                 return;
             }
             if (results.length > 0) {
+                console.log("조회하려는 값 : " +JSON.stringify(results[0]));
                 res.json(results[0]);
                 res.end();
             } else {
