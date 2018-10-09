@@ -3,6 +3,12 @@ module.exports = {
     db_url: 'mongodb://jhy156456:vmflsxj1@ds237192.mlab.com:37192/graduation_project',
     db_schemas: [
         {
+            file: './order_schema',
+            collection: 'order',
+            schemaName: 'OrderSchema',
+            modelName: 'OrderModel'
+        },
+        {
             file: './post_schema',
             collection: 'post',
             schemaName: 'PostSchema',
@@ -109,6 +115,12 @@ module.exports = {
         }
 //베스트푸드책 구현
         , {
+            file: './buy_software',
+            path: '/contest/list/:board/:sort',
+            method: 'contestList',
+            type: 'get'
+        }
+        , {
             file: './member',
             path: '/member/:email',
             method: 'email',
@@ -157,7 +169,7 @@ module.exports = {
             method: 'list',
             type: 'get'
         }
-        , {
+        , { //등록된 게시글 닉네임 클릭 후 프로필보기
             file: './buy_software',
             path: '/food/postedlist',
             method: 'postedList',
