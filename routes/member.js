@@ -104,7 +104,7 @@ var member_info = function (req, res) { //router.post('/info', function(req, res
     if (database.db) {
         addmember(database, phone, name, sextype, birthday, function (err, result) {
             if (err) {
-                console.error('핸드폰 추가 중 에러 발생 : ' + err.stack);
+                console.error('멤버 추가 중 에러 발생 : ' + err.stack);
                 console.log('<h2>핸드폰 추가 중 에러 발생</h2>');
                 console.log('<p>' + err.stack + '</p>');
                 res.end();
@@ -117,7 +117,7 @@ var member_info = function (req, res) { //router.post('/info', function(req, res
                 res.status(200).send('' + result.seq);
                 res.end();
             } else {
-                console.log.write('<h2>핸드폰 추가  실패</h2>');
+                console.log.write('<h2>멤버 추가  실패</h2>');
                 res.end();
             }
         });
@@ -146,7 +146,6 @@ var member_icon_upload = function (req, res) { //router.post('/icon_upload', fun
             database.UserModel.findByIdAndUpdate(fields.id, {
                     '$set': {
                         'member_icon_filename': files.file.name
-
                     }
                 }, {
                     new: true,
@@ -168,7 +167,7 @@ var member_icon_upload = function (req, res) { //router.post('/icon_upload', fun
                     }
 
                     console.log("성공인건가 글씨가 깨져서 잘은 모르겠지만 성공같습니당~!@");
-                    console.log('댓글저장성공 : ' + fields.id);
+                    console.log('이미지저장성공 : ' + fields.id);
                     console.log("여기?")
                     return res.sendStatus(200);
                     //return res.redirect('/process/showpost/' + paramId);

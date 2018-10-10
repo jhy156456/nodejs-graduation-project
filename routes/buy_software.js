@@ -422,7 +422,7 @@ function (data, callback) {
                     });
                     },
 function (endresults, callback) {
-                    console.log("값 : " + JSON.stringify(endresults));
+                    //console.log("값 : " + JSON.stringify(endresults));
                     res.status(200).json(endresults);
                     res.end();
                     callback(null);
@@ -499,7 +499,7 @@ function (data, callback) {
                     });
                     },
 function (endresults, callback) {
-                    console.log("값2 : " + JSON.stringify(endresults));
+                   // console.log("값2 : " + JSON.stringify(endresults));
                     res.status(200).json(endresults);
                     res.end();
                     callback(null);
@@ -724,7 +724,7 @@ function (data, callback) {
                     });
                     },
 function (endresults, callback) {
-                    console.log("값 : " + JSON.stringify(endresults));
+                    //console.log("값 : " + JSON.stringify(endresults));
                     res.status(200).json(endresults);
                     res.end();
                     callback(null);
@@ -801,7 +801,7 @@ function (data, callback) {
                     });
                     },
 function (endresults, callback) {
-                    console.log("값2 : " + JSON.stringify(endresults));
+                   // console.log("값2 : " + JSON.stringify(endresults));
                     res.status(200).json(endresults);
                     res.end();
                     callback(null);
