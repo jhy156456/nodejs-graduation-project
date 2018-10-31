@@ -45,6 +45,10 @@ SchemaObj.createSchema = function (mongoose) {
             comment_like: {
                 type: Number,
                 'default': 0
+            },
+            comment_writer_icon_filename: {
+                type: String,
+                'default': ''
             }
 	    }],
         tags: {

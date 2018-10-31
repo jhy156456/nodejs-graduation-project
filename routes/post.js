@@ -77,7 +77,7 @@ var addpost = function (req, res) {
                 console.log("글 데이터 추가함.");
                 console.log('글 작성', '포스팅 글을 생성했습니다. : ' + post._id);
 
-                return res.redirect('/process/showpost/' + post._id);
+                return res.status(200).send('' + result.seq); //이걸보내야 이미지 저장할 수 있는 액티비티로 넘어간다.
             });
 
         });
@@ -130,30 +130,7 @@ var listpost = function (req, res) {
             }
 
             if (results) {
-                //console.dir(results);
-
-                // 전체 문서 객체 수 확인
-                /*
-                Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-    at ServerResponse.setHeader (_http_outgoing.js:471:11)
-    at ServerResponse.setWriteHeadHeaders (C:\Users\JHY\login\node\node\node_modules\on-headers\index.js:82:19)
-    at ServerResponse.writeHead (C:\Users\JHY\login\node\node\node_modules\on-headers\index.js:41:36)
-    at C:\Users\JHY\login\node\node\routes\post.js:138:25
-    at C:\Users\JHY\login\node\node\node_modules\mongoose\lib\query.js:3118:18
-    at process._tickCallback (internal/process/next_tick.js:68:7)
-Emitted 'error' event at:
-    at Immediate.<anonymous> (C:\Users\JHY\login\node\node\node_modules\mongoose\lib\query.js:3128:23)
-    at runCallback (timers.js:696:18)
-    at tryOnImmediate (timers.js:667:5)
-    at processImmediate (timers.js:649:5)
-                database.PostModel.count().exec(function (err, count) {
-
-                    res.writeHead('200', {
-                        'Content-Type': 'text/html;charset=utf8'
-                    });
-                });
-                */
-                console.log("문의사항 값:" + JSON.stringify(results))
+                //console.log("문의사항 값:" + JSON.stringify(results))
                 res.status(200).json(results);
                 res.end();
             } else {
@@ -211,7 +188,7 @@ var showpost = function (req, res) {
                     console.log('incrHits executed.');
 
                     if (err2) {
-                        console.log('incrHits �떎�뻾 以� �뿉�윭 諛쒖깮.');
+                        console.log('incrHits 에러');
                         console.dir(err2);
                         return;
                     }
@@ -236,27 +213,75 @@ var showpost = function (req, res) {
     }
 
 };
+var removeComment = function (req, res) {
+    console.log('removeComment 호출됨');
+
+
+    var commentId = req.body.commentId || req.query.commentId || req.params.commentId;
+    var postId = req.body.postId || req.query.postId || req.params.postId;
+    console.log("포스트아이디 : " + postId);
+    console.log("코멘트아이디 : " + commentId)
+    var database = req.app.get('database');
+    if (database.db) {
+
+
+        database.PostModel.findById(postId,
+            function (err, results) {
+                if (err) {
+                    console.error('에러내용 : ' + err.stack);
+                    res.end();
+                    return;
+                }
+                if (results) {
+                   // console.log("결과값 : " + JSON.stringify(results))
+                    results.removeComment(commentId, function (err, results) {
+                        if(err){
+                            console.log("댓글 삭제 실패");
+                            res.end();
+                            return;
+                        }
+                        console.log("댓글 삭제 성공")
+                        return res.status(200).end();
+                    })
+                }else{
+                    console.log("해당아이디로 등록된 게시글 없음")
+                }
+                //return res.redirect('/process/showpost/' + paramId);
+            });
+
+    } else {
+        console.log("데이터베이스 오류");
+        res.end();
+    }
+
+
+
+}
+
+
+
 var addcomment = function (req, res) {
     console.log('addcomment 호출됨');
 
     var paramId = req.body.postId || req.query.postId;
     var paramContents = req.body.contents || req.query.contents;
     var paramWriter = req.body.writer || req.query.writer;
-
+     var paramcommentWriterIconFileName = req.body.writer_member_icon_filename || req.query.writer_member_icon_filename;
     console.log('넣을것 : ' + paramId + ', ' + paramContents + ', ' +
         paramWriter);
 
     var database = req.app.get('database');
 
-    // �뜲�씠�꽣踰좎씠�뒪 媛앹껜媛� 珥덇린�솕�맂 寃쎌슦
+
     if (database.db) {
 
-        // 1. �븘�씠�뵒瑜� �씠�슜�빐 �궗�슜�옄 寃��깋
+
         database.PostModel.findByIdAndUpdate(paramId, {
                 '$push': {
                     'comments': {
                         'contents': paramContents,
-                        'writer': paramWriter
+                        'writer': paramWriter,
+                        'comment_writer_icon_filename':paramcommentWriterIconFileName
                     }
                 }
             }, {
@@ -266,7 +291,7 @@ var addcomment = function (req, res) {
             function (err, results) {
                 if (err) {
                     console.log("에러여기?")
-                    console.error('寃뚯떆�뙋 �뙎湲� 異붽? 以� �뿉�윭 諛쒖깮 : ' + err.stack);
+                    console.error('에러내용 : ' + err.stack);
 
                     res.writeHead('200', {
                         'Content-Type': 'text/html;charset=utf8'
@@ -277,11 +302,8 @@ var addcomment = function (req, res) {
 
                     return;
                 }
-
-                console.log("성공인건가 글씨가 깨져서 잘은 모르겠지만 성공같습니당~!@");
-                console.log('댓글저장성공 : ' + paramId);
-                console.log("여기?")
-                return res.sendStatus(200);
+                console.log("댓글 저장 성공");
+                return res.status(200).send('' + results.comments[results.comments.length-1]._id);
                 //return res.redirect('/process/showpost/' + paramId);
             });
 
@@ -299,3 +321,4 @@ module.exports.addpost = addpost;
 module.exports.showpost = showpost;
 module.exports.addpost = addpost;
 module.exports.addcomment = addcomment;
+module.exports.removeComment = removeComment;

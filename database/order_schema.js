@@ -14,16 +14,16 @@ SchemaObj.createSchema = function (mongoose) {
     // 글 스키마 정의
     var orderSchema = mongoose.Schema({
         buyerid: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'user'
+            type: Number,
+            default :0
         },
         sellerid: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'user'
+            type: Number,
+            default :0
         },
         productid: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'software'
+            type: Number,
+            default :0
         },
         buyer_phone: {
             type: String,

@@ -7,9 +7,9 @@ Schema.createSchema = function (mongoose) {
     // 스키마 정의
 
     var SoftwareInfoImageSchema = mongoose.Schema({
-        seq : {
+        seq: {
             type: Number,
-            default : 0
+            default: 0
         },
         info_seq: {
             type: Number,

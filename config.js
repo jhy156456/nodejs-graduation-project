@@ -57,7 +57,15 @@ module.exports = {
 	],
 
     route_info: [
-//Doit 게시판 구현
+        //orderCheckItem라우터
+        {
+            file: './order',
+            path: '/order/addorder',
+            method: 'addOrderCheckItem',
+            type: 'post'
+        },
+
+//Doit 게시판 구현 시작
         {
             file: './post',
             path: '/process/addpost',
@@ -87,8 +95,14 @@ module.exports = {
             method: 'addcomment',
             type: 'post'
         },
-
-        //Doit 알림구현
+        {
+            file: './post',
+            path: '/process/removecomment',
+            method: 'removeComment',
+            type: 'get'
+        },
+//Doit 게시판 구현 끝
+        //Doit 알림구현 시작
         {
             file: './device',
             path: '/process/adddevice',
@@ -113,13 +127,8 @@ module.exports = {
             method: 'sendall',
             type: 'post'
         }
-//베스트푸드책 구현
-        , {
-            file: './buy_software',
-            path: '/contest/list/:board/:sort',
-            method: 'contestList',
-            type: 'get'
-        }
+        //Doit 알림구현 끝
+//베스트푸드책 구현 시작
         , {
             file: './member',
             path: '/member/:email',
@@ -198,7 +207,9 @@ module.exports = {
             method: 'keep_info_seq_delete',
             type: 'delete'
         }
-        ////////////////////////////////////////////로그인
+
+        //베스트푸드책 구현 끝
+        ////////////////////////////////////////////로그인 시작
 
                         , { //wantMemberSeq로 원하는 멤버의 프로필 조회
             file: './loginRoutes',
