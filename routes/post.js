@@ -46,7 +46,7 @@ var addpost = function (req, res) {
 
                 return;
             }
-            console.log("불러온 값" + JSON.stringify(results));
+            //console.log("불러온 값" + JSON.stringify(results));
             var userObjectId = results[0]._id;
             console.log('사용자 ObjectId : ' + paramWriter + ' -> ' + userObjectId);
 

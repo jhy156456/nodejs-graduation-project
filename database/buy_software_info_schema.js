@@ -68,9 +68,9 @@ Schema.createSchema = function (mongoose) {
                 trim: true,
                 'default': ''
             },
-            comment_writer_icon_filename:{
+            comment_writer_icon_filename: {
                 type: String,
-                'default':''
+                'default': ''
             },
             created_at: {
                 type: Date,
@@ -84,7 +84,7 @@ Schema.createSchema = function (mongoose) {
         post_comment_updated_datetime: {
             type: Date
         },
-        hits: {//조회수
+        hits: { //조회수
             type: Number,
             'default': 0
         },
@@ -158,15 +158,31 @@ Schema.createSchema = function (mongoose) {
     SoftwareInfoSchema.static('findAll', function (callback) {
         return this.find({}).lean().exec(callback);
     });
+
+    //키워드로 검색
+    SoftwareInfoSchema.static('findBySearchKeyWord', function (searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
+        console.log('SoftwareInfoSchema의 findByhits_cnt 호출됨.');
+        return this.find({
+            post_category: post_category
+        }).sort({
+            "hits": -1
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
+    });
+
+
+
     SoftwareInfoSchema.static('findByseq', function (seq, callback) {
         return this.find({
             seq: seq
         }).lean().exec(callback);
     });
     // 등록순 정렬
-    SoftwareInfoSchema.static('findByreg_date', function (start_page, LOADING_SIZE, post_category, callback) {
+    SoftwareInfoSchema.static('findByreg_date', function (searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
         console.log('SoftwareInfoSchema의 findByreg_date 호출됨.');
         return this.find({
+            name: {
+                $regex: searchKeyWord
+            },
             post_category: post_category
         }).sort({
             "reg_date": -1
@@ -182,7 +198,7 @@ Schema.createSchema = function (mongoose) {
             "keep_cnt": -1
         }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
     });
-// 조회순 정렬
+    // 조회순 정렬
     SoftwareInfoSchema.static('findByhits_cnt', function (start_page, LOADING_SIZE, post_category, callback) {
         console.log('SoftwareInfoSchema의 findByhits_cnt 호출됨.');
         return this.find({
@@ -197,17 +213,7 @@ Schema.createSchema = function (mongoose) {
             seq: i_seq
         }).lean().exec(callback);
     });
-    SoftwareInfoSchema.static('findBydistance', function (longitude, latitude, maxDistance, callback) {
-        console.log('SoftwareInfoSchema의 findBydistance 호출됨.');
 
-        this.find().where('geometry').near({
-            center: {
-                type: 'Point',
-                coordinates: [parseFloat(longitude), parseFloat(latitude)]
-            },
-            maxDistance: maxDistance
-        }).lean().exec(callback);
-    });
     SoftwareInfoSchema.static('incrHits', function (id, callback) {
         var query = {
             _id: id

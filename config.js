@@ -228,6 +228,11 @@ module.exports = {
             path: '/authenticate',
             method: 'two',
             type: 'post'
+        }                , {
+            file: './loginRoutes',
+            path: '/users/check/:nickname',
+            method: 'checkDuplicatedNickName',
+            type: 'get'
         }
                 , {
             file: './loginRoutes',

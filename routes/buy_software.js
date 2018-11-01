@@ -9,9 +9,95 @@ var DEFAULT_USER_LONGITUDE = 126.977689;
 
 
 
-var searchPost = function (req, res, next) {
 
+
+var searchPost = function (req, res, next) {
+    var searchKeyWord = req.body.searchKeyWord;
+
+    var database = req.app.get('database');
+    if (database.db) {
+        var tasks = [
+function (callback) {
+                database.SoftwareInfoModel.findBySearchKeyWord(searchKeyWord,start_page, LOADING_SIZE, post_category, function (err, results) {
+                    if (err) {
+                        console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
+                        callback(err, null);
+                        res.end();
+                        return;
+                    }
+                    if (results.length == 0)
+                        return callback("값에러")
+                    callback(null, results);
+                });
+                },
+function (data, callback) {
+                var count = 0;
+                console.log("data.length : " + data.length)
+                data.forEach((item, index) => { //같은원리 아닌가? for로 하면 안되는이유는??
+                    database.SoftwareInfoImageModel.findByseq(item.seq, function (err, result) {
+                        if (err) {
+                            console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                            res.end();
+                            return;
+                        }
+                        if (data.length == 0)
+                            return callback("값없음")
+                        if (result.length > 0) {
+                            result.sort(function (a, b) {
+                                //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
+                                return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
+                            })
+                            data[index].image_filename = result[0].filename;
+                        }
+                        count++;
+                        if (count == data.length) {
+                            callback(null, data)
+                        }
+                    });
+                });
+},
+function (data, callback) {
+                var ctr = 0;
+                data.forEach((item, index) => {
+                    database.SoftwareKeepModel.findByseqfromInfoseq(item.seq, function (err, result) {
+                        if (err) {
+                            console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                            res.end();
+                            return;
+                        }
+                        if (result.length > 0) {
+                            if (parseInt(member_seq) == parseInt(result[0].member_seq) && result.length != 0) {
+                                data[index].is_keep = 'true';
+                            } else {
+                                data[index].is_keep = 'false';
+                            }
+                        } else { //즐겨찾기한게 없으면 안들어오기떄문에 false값을 줄 수 없어서 주기위해 여기에도 추가해야함
+                            data[index].is_keep = 'false';
+                        }
+                        ctr++;
+                        if (ctr == data.length) callback(null, data) // 가져온 info값들의 즐겨찾기 유무조사후 빠져나오기위한 함수
+                    })
+                });
+                    },
+function (endresults, callback) {
+                // console.log("값 : " + JSON.stringify(endresults));
+                res.status(200).json(endresults);
+                res.end();
+                callback(null);
+                    }
+        ];
+        async.waterfall(tasks, function (err) {
+            if (err)
+                console.log('err');
+            else
+                console.log('done');
+        });
+    } else {
+        console.log("데이터베이스 오픈 오류");
+        res.end();
+    }
 }
+
 
 
 
@@ -207,18 +293,18 @@ var info_seq = function (req, res, next) { //info/:seq
                         return;
                     }
                     if (results.length == 0) return callback("값없음")
-                    
-                
+
+
                     database.SoftwareInfoModel.incrHits(results[0]._id, function (err2, results2) {
-                    console.log('incrHits executed.');
+                        console.log('incrHits executed.');
 
-                    if (err2) {
-                        console.log('incrHits 에러');
-                        console.dir(err2);
-                        return;
-                    }
+                        if (err2) {
+                            console.log('incrHits 에러');
+                            console.dir(err2);
+                            return;
+                        }
 
-                });
+                    });
                     callback(null, results); //info내용1개 반환하는듯
                 })
             },
@@ -290,8 +376,8 @@ var addcomment = function (req, res) {
     var paramContents = req.body.contents || req.query.contents;
     var paramWriter = req.body.writer || req.query.writer;
     var paramcommentWriterIconFileName = req.body.writer_member_icon_filename || req.query.writer_member_icon_filename;
-    
-   console.log("넣으려는 값 : " + JSON.stringify(req.body));
+
+    console.log("넣으려는 값 : " + JSON.stringify(req.body));
     var database = req.app.get('database');
 
     if (database.db) {
@@ -301,7 +387,7 @@ var addcomment = function (req, res) {
                     'comments': {
                         'contents': paramContents,
                         'writer': paramWriter,
-                        'comment_writer_icon_filename':paramcommentWriterIconFileName
+                        'comment_writer_icon_filename': paramcommentWriterIconFileName
                     }
                 }
             }, {
@@ -316,8 +402,8 @@ var addcomment = function (req, res) {
                     return;
                 }
                 //console.log("댓글 : " + results.comments);
-               // console.log("값 : " + results.comments[results.comments.length-1]._id);
-                return res.status(200).send('' + results.comments[results.comments.length-1]._id);
+                // console.log("값 : " + results.comments[results.comments.length-1]._id);
+                return res.status(200).send('' + results.comments[results.comments.length - 1]._id);
             });
 
     } else {
@@ -331,7 +417,9 @@ var addcomment = function (req, res) {
 };
 
 var list = function (req, res, next) { //list', function(req, res, next) {
+    
     var member_seq = req.query.member_seq;
+    var searchKeyWord = req.query.key_word;
     var order_type = req.query.order_type;
     var current_page = req.query.current_page || 0;
     var start_page = current_page * LOADING_SIZE;
@@ -340,14 +428,14 @@ var list = function (req, res, next) { //list', function(req, res, next) {
     if (!member_seq) {
         return res.sendStatus(400);
     }
-
+    console.log("서치 : " + searchKeyWord)
     var database = req.app.get('database');
     if (order_type == 'reg_date') {
         console.log("등록순 정렬 호출 됨");
         if (database.db) {
             var tasks = [
 function (callback) {
-                    database.SoftwareInfoModel.findByreg_date(start_page, LOADING_SIZE, post_category, function (err, results) {
+                    database.SoftwareInfoModel.findByreg_date(searchKeyWord , start_page, LOADING_SIZE, post_category, function (err, results) {
                         if (err) {
                             console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
                             callback(err, null);
@@ -372,7 +460,7 @@ function (data, callback) {
                             if (data.length == 0)
                                 return callback("값없음")
                             if (result.length > 0) {
-                                result.sort(function (a, b) { 
+                                result.sort(function (a, b) {
                                     //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
                                     return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
                                 })
@@ -451,7 +539,7 @@ function (data, callback) {
                             if (data.length == 0)
                                 return callback("값없음")
                             if (result.length > 0) {
-                                result.sort(function (a, b) { 
+                                result.sort(function (a, b) {
                                     //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
                                     return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
                                 })
@@ -501,9 +589,7 @@ function (endresults, callback) {
                     console.log('done');
             });
         }
-    }
-    
-    else if(order_type == 'hits_cnt'){
+    } else if (order_type == 'hits_cnt') {
         console.log("조회순 정렬 호출 됨2");
         if (database.db) {
             var tasks = [
@@ -532,7 +618,7 @@ function (data, callback) {
                             if (data.length == 0)
                                 return callback("값없음")
                             if (result.length > 0) {
-                                result.sort(function (a, b) { 
+                                result.sort(function (a, b) {
                                     //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
                                     return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
                                 })

@@ -11,10 +11,10 @@ const password = require('../functions/password');
 const config = require('../config2/config.json');
 
 
-var getUser = function(req,res){
+var getUser = function (req, res) {
     var seq = req.params.seq;
     var database = req.app.get('database');
-        if (database.db) {
+    if (database.db) {
         database.UserModel.findBySeq(seq, function (err, results) {
             if (err) {
                 console.error('회원정보 반환 중 오류 발생 :' + err.stack);
@@ -23,7 +23,7 @@ var getUser = function(req,res){
                 return;
             }
             if (results.length > 0) {
-                console.log("조회하려는 값 : " +JSON.stringify(results[0]));
+                console.log("조회하려는 값 : " + JSON.stringify(results[0]));
                 res.json(results[0]);
                 res.end();
             } else {
@@ -71,12 +71,31 @@ var two = function (req, res) {
     }
 
 }
+var checkDuplicatedNickName = function (req, res) {
+    console.log("낫파운드 어디? 0: " + nickName);
+    var nickName = req.params.nickname;
+    var database = req.app.get('database');
+    console.log("낫파운드 어디? : " + nickName);
+    register.checkNickName(database, nickName)
+        .then(result => {
+            //res.setHeader('Location', '/users/' + email);
+            res.status(result.status).json({
+                message: result.message
+            })
+        })
+        .catch(err => res.status(err.status).json({
+            message: err.message
+        }));
+
+}
+
+
 var three = function (req, res) {
     var database = req.app.get('database');
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
-        var sextype = req.body.sextype;
+    var sextype = req.body.sextype;
     var nickName = req.body.nickname;
     var birthday = req.body.birthday;
 
@@ -87,17 +106,13 @@ var three = function (req, res) {
         });
 
     } else {
-
-        register.registerUser(database, name, email, password,sextype,birthday,nickName)
-
+        register.registerUser(database, name, email, password, sextype, birthday, nickName)
             .then(result => {
-
                 res.setHeader('Location', '/users/' + email);
                 res.status(result.status).json({
                     message: result.message
                 })
             })
-
             .catch(err => res.status(err.status).json({
                 message: err.message
             }));
@@ -212,7 +227,7 @@ function checkToken(req) {
     }
 }
 
-
+module.exports.checkDuplicatedNickName=checkDuplicatedNickName;
 module.exports.getUser = getUser;
 module.exports.one = one;
 module.exports.two = two;
