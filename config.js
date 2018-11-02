@@ -57,6 +57,48 @@ module.exports = {
 	],
 
     route_info: [
+
+        //채팅라우터 시작
+        {
+            file: './chat',
+            path: '/room/start',
+            method: 'get_room_start',
+            type: 'get'
+        },
+        {
+            file: './chat',
+            path: '/room',
+            method: 'get_room',
+            type: 'get'
+        },
+        {
+            file: './chat',
+            path: '/room',
+            method: 'post_room',
+            type: 'post'
+        },
+        {
+            file: './chat',
+            path: '/room/:id',
+            method: 'get_room_id',
+            type: 'get'
+        },
+        {
+            file: './chat',
+            path: '/room/:id',
+            method: 'delete_room_id',
+            type: 'delete'
+        },
+        {
+            file: './chat',
+            path: '/room/:id/chat',
+            method: 'post_room_id_chat',
+            type: 'post'
+        },
+
+
+
+        //채팅라우터 끝
         //orderCheckItem라우터
         {
             file: './order',
@@ -228,7 +270,7 @@ module.exports = {
             path: '/authenticate',
             method: 'two',
             type: 'post'
-        }                , {
+        }, {
             file: './loginRoutes',
             path: '/users/check/:nickname',
             method: 'checkDuplicatedNickName',
