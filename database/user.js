@@ -20,9 +20,13 @@ Schema.createSchema = function (mongoose) {
             type: String,
             default: ''
         },
-        nickname :{
-            type : String,
-            default:''
+        nickname: {
+            type: String,
+            default: ''
+        },
+        member_type: {
+            type: String,
+            default : ''
         },
         hashed_password: String,
         created_at: String,
@@ -46,7 +50,7 @@ Schema.createSchema = function (mongoose) {
         }
 
     });
-        UserSchema.static('findByEmail', function (post_nickname, callback) {
+    UserSchema.static('findByEmail', function (post_nickname, callback) {
         return this.find({
             nickname: post_nickname
         }).lean().exec(callback);
@@ -56,10 +60,14 @@ Schema.createSchema = function (mongoose) {
             phone: phone
         }).lean().exec(callback);
     });
-    UserSchema.static('findBySeq',function(seq,callback){
+    UserSchema.static('findBySeq', function (seq, callback) {
         return this.find({
-            seq:seq
-        },{name:1,nickname:1,member_icon_filename:1}).lean().exec(callback);
+            seq: seq
+        }, {
+            name: 1,
+            nickname: 1,
+            member_icon_filename: 1
+        }).lean().exec(callback);
     });
     UserSchema.static('findByMail', function (email, callback) {
         return this.find({
@@ -69,6 +77,11 @@ Schema.createSchema = function (mongoose) {
     UserSchema.static('findAll', function (callback) {
         return this.find({}).lean().exec(callback);
     });
+    UserSchema.static('findSupporters',function(callback){
+        return this.find({
+            member_type:"Supporters"
+        }).lean.exec(callback);
+    })
     return UserSchema;
 }
 module.exports = Schema;

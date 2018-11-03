@@ -98,6 +98,7 @@ var three = function (req, res) {
     var sextype = req.body.sextype;
     var nickName = req.body.nickname;
     var birthday = req.body.birthday;
+    var member_type = req.body.memberType;
 
     if (!name || !email || !password || !name.trim() || !email.trim() || !password.trim()) {
 
@@ -106,7 +107,7 @@ var three = function (req, res) {
         });
 
     } else {
-        register.registerUser(database, name, email, password, sextype, birthday, nickName)
+        register.registerUser(database, name, email, password, sextype, birthday, nickName, memberTpye)
             .then(result => {
                 res.setHeader('Location', '/users/' + email);
                 res.status(result.status).json({
@@ -226,8 +227,31 @@ function checkToken(req) {
         return false;
     }
 }
+var getSupporters = function (req, res) {
+    console.log('getSupporters 호출됨.');
+    var database = req.app.get('database');
+    // 데이터베이스 객체가 초기화된 경우
+    if (database.db) {
+        // 1. 모든 단말 검색
+        database.UserModel.findSupporters(function (err, results) {
+            if (err) {
+                console.error('서포터즈 리스트 조회중 에러발생 : ' + err.stack);
+                res.end();
+                return;
+            }
+            res.status(200).json(results);
+            res.end();
+        });
+    } else {
+        console.log("데이터베이스 연결 실패")
+        res.end();
+    }
 
-module.exports.checkDuplicatedNickName=checkDuplicatedNickName;
+};
+
+
+module.exports.getSupporters = getSupporters;
+module.exports.checkDuplicatedNickName = checkDuplicatedNickName;
 module.exports.getUser = getUser;
 module.exports.one = one;
 module.exports.two = two;

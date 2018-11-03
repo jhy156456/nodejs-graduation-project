@@ -10,22 +10,27 @@ var bodyParser = require('body-parser'),
     static = require('serve-static'),
     errorHandler = require('errorhandler');
 var config = require('./config');
+const flash = require('connect-flash');
 const session = require('express-session');
-
+require('dotenv').config();
 const webSocket = require('./socket');
+const ColorHash = require('color-hash');
 // cors 사용 - 클라이언트에서 ajax로 요청 시 CORS(다중 서버 접속) 지원
 
 var app = express();
 var route_loader = require('./routes/route_loader');
 var database = require('./database/database');
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 8005);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'pug');
+
+
 
 //채팅기능을 위해 추가함
+
 const sessionMiddleware = session({
     resave: false,
     saveUninitialized: false,
@@ -37,7 +42,7 @@ const sessionMiddleware = session({
 });
 //채팅기능을 위해 추가함 끝
 
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -46,9 +51,20 @@ app.use(bodyParser.urlencoded({
 app.use(sessionMiddleware);
 // public 폴더를 static으로 오픈
 app.use('/public', static(path.join(__dirname, 'public')));
-
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser(process.env.COOKIE_SECRET));
+//채팅구현위해 추가함
+app.use(flash());
+app.use((req, res, next) => {
+  if (!req.session.color) {
+    const colorHash = new ColorHash();
+    req.session.color = colorHash.hex(req.sessionID);
+  }
+  next();
+});
+
+//채팅구현위해 추가함 끝
+
 
 route_loader.init(app, express.Router());
 

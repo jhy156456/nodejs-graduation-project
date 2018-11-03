@@ -3,6 +3,18 @@ module.exports = {
     db_url: 'mongodb://jhy156456:vmflsxj1@ds237192.mlab.com:37192/graduation_project',
     db_schemas: [
         {
+            file: './chat_contents_schema',
+            collection: 'chat',
+            schemaName: 'chatSchema',
+            modelName: 'Chat'
+        },
+        {
+            file: './chat_room_schema',
+            collection: 'room',
+            schemaName: 'roomSchema',
+            modelName: 'Room'
+        },
+        {
             file: './order_schema',
             collection: 'order',
             schemaName: 'OrderSchema',
@@ -58,7 +70,7 @@ module.exports = {
 
     route_info: [
 
-        //채팅라우터 시작
+        //<== 채팅라우터 시작 ==>
         {
             file: './chat',
             path: '/room/start',
@@ -85,6 +97,12 @@ module.exports = {
         },
         {
             file: './chat',
+            path: '/room/android/:id',
+            method: 'get_room_android_id',
+            type: 'get'
+        },
+        {
+            file: './chat',
             path: '/room/:id',
             method: 'delete_room_id',
             type: 'delete'
@@ -95,10 +113,15 @@ module.exports = {
             method: 'post_room_id_chat',
             type: 'post'
         },
+        {
+            file: './loginRoutes',
+            path: '/room/getsupporters',
+            method: 'getSupporters',
+            type: 'get'
+        },
 
 
-
-        //채팅라우터 끝
+        //<== 채팅라우터 끝 ==>
         //orderCheckItem라우터
         {
             file: './order',
