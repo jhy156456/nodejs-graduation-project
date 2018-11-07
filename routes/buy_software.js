@@ -4,8 +4,7 @@ var async = require('async');
 var router = express.Router();
 
 var LOADING_SIZE = 20;
-var DEFAULT_USER_LATITUDE = 37.566229;
-var DEFAULT_USER_LONGITUDE = 126.977689;
+
 
 
 

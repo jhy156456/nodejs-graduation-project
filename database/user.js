@@ -24,9 +24,9 @@ Schema.createSchema = function (mongoose) {
             type: String,
             default: ''
         },
-        member_type: {
+        user_type: {
             type: String,
-            default : ''
+            default: ''
         },
         hashed_password: String,
         created_at: String,
@@ -77,10 +77,10 @@ Schema.createSchema = function (mongoose) {
     UserSchema.static('findAll', function (callback) {
         return this.find({}).lean().exec(callback);
     });
-    UserSchema.static('findSupporters',function(callback){
+    UserSchema.static('findSupporters', function (start_page, LOADING_SIZE, callback) {
         return this.find({
-            member_type:"Supporters"
-        }).lean.exec(callback);
+            user_type: "Supporters"
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
     })
     return UserSchema;
 }

@@ -3,7 +3,7 @@
 
 const bcrypt = require('bcryptjs');
 
-exports.registerUser = (database, name, email, password, sextype, birthday, nickName,memberType) =>
+exports.registerUser = (database, name, email, password, sextype, birthday, nickName,userType) =>
 
     new Promise((resolve, reject) => {
         const salt = bcrypt.genSaltSync(10);
@@ -15,7 +15,7 @@ exports.registerUser = (database, name, email, password, sextype, birthday, nick
             email: email,
             nickname: nickName,
             hashed_password: hash,
-            member_type:memberType,
+            user_type:userType,
             created_at: new Date()
         });
         newUser.save()

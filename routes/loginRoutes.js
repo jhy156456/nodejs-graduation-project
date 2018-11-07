@@ -9,7 +9,7 @@ const login = require('../functions/login');
 const profile = require('../functions/profile');
 const password = require('../functions/password');
 const config = require('../config2/config.json');
-
+var LOADING_SIZE = 20;
 
 var getUser = function (req, res) {
     var seq = req.params.seq;
@@ -98,7 +98,8 @@ var three = function (req, res) {
     var sextype = req.body.sextype;
     var nickName = req.body.nickname;
     var birthday = req.body.birthday;
-    var member_type = req.body.memberType;
+    var member_type = req.body.user_type;
+    
 
     if (!name || !email || !password || !name.trim() || !email.trim() || !password.trim()) {
 
@@ -107,7 +108,7 @@ var three = function (req, res) {
         });
 
     } else {
-        register.registerUser(database, name, email, password, sextype, birthday, nickName, memberTpye)
+        register.registerUser(database, name, email, password, sextype, birthday, nickName, member_type)
             .then(result => {
                 res.setHeader('Location', '/users/' + email);
                 res.status(result.status).json({
@@ -229,16 +230,22 @@ function checkToken(req) {
 }
 var getSupporters = function (req, res) {
     console.log('getSupporters 호출됨.');
+     var userType = req.params.user_type;
+    var current_page = req.query.current_page || 0;
+     var start_page = current_page * LOADING_SIZE;
+    console.log("유저타입 : " + userType);
+    console.log("현제페이지 : " + current_page)
     var database = req.app.get('database');
     // 데이터베이스 객체가 초기화된 경우
     if (database.db) {
         // 1. 모든 단말 검색
-        database.UserModel.findSupporters(function (err, results) {
+        database.UserModel.findSupporters(start_page, LOADING_SIZE,function (err, results) {
             if (err) {
                 console.error('서포터즈 리스트 조회중 에러발생 : ' + err.stack);
                 res.end();
                 return;
             }
+            console.log("서포터즈들 : " +JSON.stringify(results));
             res.status(200).json(results);
             res.end();
         });

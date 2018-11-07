@@ -7,7 +7,11 @@ Schema.createSchema = function (mongoose) {
             required: true,
             ref: 'room'
         },
-        user: {
+        sender: {
+            type: String,
+            required: true,
+        },
+        receiver: {
             type: String,
             required: true,
         },

@@ -115,11 +115,16 @@ module.exports = {
         },
         {
             file: './loginRoutes',
-            path: '/room/getsupporters',
+            path: '/user/:user_type',
             method: 'getSupporters',
             type: 'get'
         },
-
+        {
+            file: './chat',
+            path: '/user/chat/:user_nickname',
+            method: 'getChatUserNickName',
+            type: 'get'
+        },
 
         //<== 채팅라우터 끝 ==>
         //orderCheckItem라우터
