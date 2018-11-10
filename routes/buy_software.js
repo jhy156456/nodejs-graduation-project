@@ -2,13 +2,7 @@ var express = require('express');
 var formidable = require('formidable');
 var async = require('async');
 var router = express.Router();
-
 var LOADING_SIZE = 20;
-
-
-
-
-
 
 var searchPost = function (req, res, next) {
     var searchKeyWord = req.body.searchKeyWord;
@@ -427,7 +421,8 @@ var list = function (req, res, next) { //list', function(req, res, next) {
     if (!member_seq) {
         return res.sendStatus(400);
     }
-    console.log("서치 : " + searchKeyWord)
+    console.log("FoodList currnet_page : " + req.query.current_page);
+    console.log("FoodList start_page : " + start_page);
     var database = req.app.get('database');
     if (order_type == 'reg_date') {
         console.log("등록순 정렬 호출 됨");

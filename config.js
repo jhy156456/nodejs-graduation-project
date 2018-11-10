@@ -91,6 +91,12 @@ module.exports = {
         },
         {
             file: './chat',
+            path: '/room/android',
+            method: 'post_room_android',
+            type: 'post'
+        },
+        {
+            file: './chat',
             path: '/room/:id',
             method: 'get_room_id',
             type: 'get'
@@ -125,7 +131,24 @@ module.exports = {
             method: 'getChatUserNickName',
             type: 'get'
         },
-
+        {
+            file: './chat',
+            path: '/room/participant/:id',
+            method: 'getParticipant',
+            type: 'get'
+        },
+        {
+            file: './chat',
+            path: '/room/participant_down/:id',
+            method: 'participantDown',
+            type: 'get'
+        },
+        {
+            file: './chat',
+            path: '/room/owner_down/:id',
+            method: 'ownerDown',
+            type: 'get'
+        },
         //<== 채팅라우터 끝 ==>
         //orderCheckItem라우터
         {

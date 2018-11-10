@@ -245,7 +245,7 @@ var getSupporters = function (req, res) {
                 res.end();
                 return;
             }
-            console.log("서포터즈들 : " +JSON.stringify(results));
+            //console.log("서포터즈들 : " +JSON.stringify(results));
             res.status(200).json(results);
             res.end();
         });

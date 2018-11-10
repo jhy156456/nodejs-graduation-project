@@ -29,6 +29,7 @@ block content
     input#gif(type='file' name='gif' accept='image/gif')
     input#chat(name='chat')
     button(type='submit') 전송
+
   script(src='/socket.io/socket.io.js')
   script.
     var socket = io.connect('http://localhost:8005/chat', {
