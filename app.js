@@ -24,6 +24,8 @@ var database = require('./database/database');
 
 //===== 뷰 엔진 설정 =====//
 app.set('views', path.join(__dirname, 'views'));
+
+app.set('view engine', 'ejs');
 app.set('view engine', 'pug');
 
 //===== 서버 변수 설정 및 static으로 public 폴더 설정  =====//
@@ -37,8 +39,14 @@ app.use(bodyParser.urlencoded({
 // body-parser를 이용해 application/json 파싱
 app.use(bodyParser.json())
 // public 폴더를 static으로 오픈
-//app.use('/public', static(path.join(__dirname, 'public')));
+app.use('/public', static(path.join(__dirname, 'public')));
+
+
 //위에꺼로 public폴더오픈하면 구매리스트에서 사진이 로딩되지않는당..!
+//근대 아래꺼로 public폴더오픈하면 /public/~.js파일을 못찾는다..
+//우선 2개다 주석을풀어놔보자 ㅠㅠ
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 //<== 채팅구현위해 추가함 ==>
@@ -103,10 +111,10 @@ app.use(function (err, req, res, next) {
 
 //확인되지 않은 예외 처리 - 서버 프로세스 종료하지 않고 유지함
 process.on('uncaughtException', function (err) {
-	console.log('uncaughtException 발생함 : ' + err);
-	console.log('서버 프로세스 종료하지 않고 유지함.');
-	
-	console.log(err.stack);
+    console.log('uncaughtException 발생함 : ' + err);
+    console.log('서버 프로세스 종료하지 않고 유지함.');
+
+    console.log(err.stack);
 });
 
 // 프로세스 종료 시에 데이터베이스 연결 해제
@@ -116,10 +124,10 @@ process.on('SIGTERM', function () {
 });
 
 app.on('close', function () {
-	console.log("Express 서버 객체가 종료됩니다.");
-	if (database.db) {
-		database.db.close();
-	}
+    console.log("Express 서버 객체가 종료됩니다.");
+    if (database.db) {
+        database.db.close();
+    }
 });
 
 

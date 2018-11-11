@@ -149,6 +149,12 @@ module.exports = {
             method: 'ownerDown',
             type: 'get'
         },
+        {
+            file: './device',
+            path: '/process/send_chat_alarm',
+            method: 'sendChatAlarm',
+            type: 'post'
+        },
         //<== 채팅라우터 끝 ==>
         //orderCheckItem라우터
         {

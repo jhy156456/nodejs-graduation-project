@@ -99,7 +99,7 @@ var three = function (req, res) {
     var nickName = req.body.nickname;
     var birthday = req.body.birthday;
     var member_type = req.body.user_type;
-    
+    var registrationId;
 
     if (!name || !email || !password || !name.trim() || !email.trim() || !password.trim()) {
 
@@ -108,16 +108,30 @@ var three = function (req, res) {
         });
 
     } else {
-        register.registerUser(database, name, email, password, sextype, birthday, nickName, member_type)
-            .then(result => {
-                res.setHeader('Location', '/users/' + email);
-                res.status(result.status).json({
-                    message: result.message
+        database.DeviceModel.findOne({ //findone은 [0]하지 않습니다^^
+            mobile: req.body.phone
+        }, function (err2, results2) {
+            if (err2) {
+                console.log('registrationId 추출 에러');
+                console.dir(err2);
+                return;
+            }
+            console.log("registrationId : " + results2.registrationId);
+            registrationId = results2.registrationId;
+            console.log('registrationId 추출 성공');
+            register.registerUser(database, name, email, password, sextype, birthday, nickName, member_type, registrationId)
+                .then(result => {
+                    res.setHeader('Location', '/users/' + email);
+                    res.status(result.status).json({
+                        message: result.message
+                    })
                 })
-            })
-            .catch(err => res.status(err.status).json({
-                message: err.message
-            }));
+                .catch(err => res.status(err.status).json({
+                    message: err.message
+                }));
+        });
+
+
     }
 }
 var four = function (req, res) {
@@ -230,16 +244,16 @@ function checkToken(req) {
 }
 var getSupporters = function (req, res) {
     console.log('getSupporters 호출됨.');
-     var userType = req.params.user_type;
+    var userType = req.params.user_type;
     var current_page = req.query.current_page || 0;
-     var start_page = current_page * LOADING_SIZE;
+    var start_page = current_page * LOADING_SIZE;
     console.log("유저타입 : " + userType);
     console.log("현제페이지 : " + current_page)
     var database = req.app.get('database');
     // 데이터베이스 객체가 초기화된 경우
     if (database.db) {
         // 1. 모든 단말 검색
-        database.UserModel.findSupporters(start_page, LOADING_SIZE,function (err, results) {
+        database.UserModel.findSupporters(start_page, LOADING_SIZE, function (err, results) {
             if (err) {
                 console.error('서포터즈 리스트 조회중 에러발생 : ' + err.stack);
                 res.end();
@@ -256,6 +270,72 @@ var getSupporters = function (req, res) {
 
 };
 
+var userLike = function (req, res) {
+    console.log('userLike 호출됨.');
+    var database = req.app.get('database');
+    var paramNickName = req.body.nickname || req.query.nickname;
+    console.log('요청 파라미터 : ' + paramMobile + ', ' + paramRegistrationId);
+
+    // 데이터베이스 객체가 초기화된 경우
+    if (database.db) {
+        database.UserModel.findOneAndUpdate({
+            nickname: paramNickName
+        }, {
+            $inc: {
+                user_like: 1
+            },
+            participant_is_exit: true
+        }, {
+            upsert: true,
+            'new': true,
+            setDefaultsOnInsert: true
+        }, function (err2, results2) {
+            if (err2) {
+                console.log('좋아요 증가 에러');
+                console.dir(err2);
+                return;
+            }
+            console.log('좋아요 감소 성공');
+            res.end();
+        });
+    } else {
+        console.log('데이터베이스 연결 실패');
+        res.end();
+    }
+}
+var userDisLike = function (req, res) {
+    console.log('userDisLike 호출됨.');
+    var database = req.app.get('database');
+    var paramNickName = req.body.nickname || req.query.nickname;
+    console.log('요청 파라미터 : ' + paramMobile + ', ' + paramRegistrationId);
+
+    // 데이터베이스 객체가 초기화된 경우
+    if (database.db) {
+        database.UserModel.findOneAndUpdate({
+            nickname: paramNickName
+        }, {
+            $inc: {
+                user_like: -1
+            },
+            participant_is_exit: true
+        }, {
+            upsert: true,
+            'new': true,
+            setDefaultsOnInsert: true
+        }, function (err2, results2) {
+            if (err2) {
+                console.log('좋아요 증가 에러');
+                console.dir(err2);
+                return;
+            }
+            console.log('좋아요 감소 성공');
+            res.end();
+        });
+    } else {
+        console.log('데이터베이스 연결 실패');
+        res.end();
+    }
+}
 
 module.exports.getSupporters = getSupporters;
 module.exports.checkDuplicatedNickName = checkDuplicatedNickName;

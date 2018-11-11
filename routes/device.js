@@ -55,7 +55,7 @@ var adddevice = function (req, res) {
 
             console.log("단말 데이터 추가함.");
 
-            console.dir(device);
+            //console.dir(device);
 
             res.writeHead('200', {
                 'Content-Type': 'application/json;charset=utf8'
@@ -101,8 +101,8 @@ var listdevice = function (req, res) {
             }
 
             if (results) {
-                console.dir(results);
-
+                //console.dir(results);
+                console.log("리스트 디바이스 : " + JSON.stringify(results))
                 var context = {
                     title: '단말 목록',
                     devices: results
@@ -168,7 +168,7 @@ var register = function (req, res) {
 
             if (result) {
                 console.log("등록 ID 업데이트함.");
-                console.dir(result);
+                //console.dir(result);
 
                 res.writeHead('200', {
                     'Content-Type': 'application/json;charset=utf8'
@@ -223,9 +223,8 @@ var sendall = function (req, res) {
 
                 return;
             }
-
             if (results) {
-                console.dir(results);
+                //console.dir(results);
 
                 // 등록 ID만 추출
                 var regIds = [];
@@ -303,9 +302,113 @@ var sendall = function (req, res) {
     }
 
 };
+var sendChatAlarm = function (req, res) {
+    console.log('device 모듈 안에 있는 register 호출됨.');
+    var database = req.app.get('database');
+    var paramData = req.body.data || req.query.data;
+    console.log('요청 파라미터 : ' + paramData);
+
+    // 데이터베이스 객체가 초기화된 경우
+    if (database.db) {
+        // 1. 모든 단말 검색
+        database.UserModel.findOne({ //findone은 1개찾는거니까 results[0]하지않습니다!
+            nickname: req.body.nickname
+        }, function (err, results) {
+            if (err) {
+                console.error('푸시 전송을 위한 조회 중 에러 발생 : ' + err.stack);
+                res.writeHead('200', {
+                    'Content-Type': 'text/html;charset=utf8'
+                });
+                res.write('<h2>푸시 전송을 위한 조회 중 에러 발생</h2>');
+                res.write('<p>' + err.stack + '</p>');
+                res.end();
+
+                return;
+            }
+            if (results) {
+                //console.dir(results);
+                // 등록 ID만 추출
+                var regIds = results.registrationId;
+                /*     for (var i = 0; i < results.length; i++) {
+                         var curId = results[i]._doc.registrationId;
+                         console.log('등록 ID #' + i + ' : ' + regIds.length);
+
+                         regIds.push(curId);
+                     }*/
+                console.log('전송 대상 닉네임 : ' + results.nickname);
+                console.log('전송 대상 등럭아이디 : ' + results.registrationId);
+/*                if (regIds.length < 1) { //원래는 센드올이라 배열이였음
+                    console.info('푸시 전송 대상 없음 : ' + regIds.length);
+
+                    res.writeHead('200', {
+                        'Content-Type': 'text/html;charset=utf8'
+                    });
+                    res.write('<h2>푸시 전송 대상 없음</h2>');
+                    res.write('<p>대상 단말을 선택하고 다시 시도하십시오.</p>');
+                    res.end();
+
+                    return;
+                }*/
+
+                // node-gcm을 이용해 전송
+                var message = new fcm.Message({
+                    priority: 'high',
+                    timeToLive: 3
+                });
+                message.addData('command', 'show');
+                message.addData('type', 'text/plain');
+                message.addData('data', paramData);
+
+                var sender = new fcm.Sender(process.env.FCM_API_KEY);
+
+                sender.send(message, regIds, function (err, result) {
+                    if (err) {
+                        console.error('푸시 전송 시도 중 에러 발생 : ' + err.stack);
+
+                        res.writeHead('200', {
+                            'Content-Type': 'text/html;charset=utf8'
+                        });
+                        res.write('<h2>푸시 전송 시도 중 에러 발생</h2>');
+                        res.write('<p>' + err.stack + '</p>');
+                        res.end();
+
+                        return;
+                    }
+
+                    //console.dir(result);
+
+                    res.writeHead('200', {
+                        'Content-Type': 'text/html;charset=utf8'
+                    });
+                    res.write('<h2>푸시 메시지 전송 성공</h2>');
+                    console.log('<h2>푸시 메시지 전송 성공</h2>');
+                    res.end();
+
+                });
 
 
+            } else {
+                console.log("리스트 조회 실패")
+                res.writeHead('200', {
+                    'Content-Type': 'text/html;charset=utf8'
+                });
+                res.write('<h2>단말 리스트 조회  실패</h2>');
+                res.end();
+            }
+        });
+    } else {
+        res.writeHead('200', {
+            'Content-Type': 'text/html;charset=utf8'
+        });
+        console.log("데이터베이스 연결 실패")
+        res.write('<h2>데이터베이스 연결  실패</h2>');
+        res.end();
+    }
 
+};
+
+
+module.exports.sendChatAlarm = sendChatAlarm;
 module.exports.adddevice = adddevice;
 module.exports.listdevice = listdevice;
 module.exports.register = register;

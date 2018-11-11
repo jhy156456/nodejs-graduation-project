@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 var LOADING_SIZE = 20;
+const axios = require('axios');
 
 //room/chat/user_nickname
 var getChatUserNickName = async function (req, res, next) {
@@ -171,7 +172,7 @@ var post_room_id_chat = async function (req, res) {
     if (req.body.sender == null) sender = "qwer"; //nickName = "비회원";
     else sender = req.body.sender;
 
-    if (req.body.receiver == null) receiver = "asdf"; //인터넷상에서 리시버랑 센더어케하는지모르겠어서 우선이렇게임시방편
+    if (req.body.receiver == null) receiver = "zxcvb"; //인터넷상에서 리시버랑 센더어케하는지모르겠어서 우선이렇게임시방편
     else receiver = req.body.receiver;
     try {
 
@@ -207,11 +208,7 @@ var post_room_id_chat = async function (req, res) {
                         console.log("newRoom값 : " + JSON.stringify(results2));
                         req.app.get('io').of('/room').to(receiver).emit('newRoom', results2);
             */
-
         }
-
-
-
         var chat = new database.Chat({
             room: req.params.id,
             sender: sender,
@@ -235,7 +232,23 @@ var post_room_id_chat = async function (req, res) {
             console.log('last_chat_contents 성공');
         });
         await chat.save();
+        var sendChatAlarm = new Object();
+        sendChatAlarm.data=req.body.chat;
+        sendChatAlarm.nickname=receiver;
+        axios.post(`http://localhost:8005/process/send_chat_alarm`,sendChatAlarm)
+                    .then((results) => {
+                        console.log("알람 라우팅전송 완료");
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+        //채팅방목록화면에서 새로운채팅이왔을때 데이터값 바꿔주기위함
+        var roomModify= new Object();
+        roomModify.last_chat_contents = req.body.chat;
+        roomModify._id=req.params.id;
         console.log("보낼 req.params.id값 : " + req.params.id + "chat값 : " + chat)
+        req.app.get('io').of('/room').to(receiver).emit('lastChatReceive', roomModify);
+        
+        
         req.app.get('io').of('/chat').to(req.params.id).emit('chat', chat);
         res.send('ok');
     } catch (error) {
@@ -274,12 +287,6 @@ var get_room_android_id = async function (req, res, next) {
             "createdAt": -1
         }).skip(start_page).limit(LOADING_SIZE);
         res.status(200).json(chats);
-        /*        return res.render('chat', {
-                    room,
-                    title: room.title,
-                    chats,
-                    user: req.session.color,
-                });*/
     } catch (error) {
         console.error(error);
         return next(error);
@@ -344,6 +351,7 @@ var ownerDown = async function (req, res, next) {
                 return;
             }
             console.log('참가자 감소 성공');
+            res.end();
         });
     } catch (error) {
         console.error(error);

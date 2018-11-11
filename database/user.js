@@ -28,6 +28,10 @@ Schema.createSchema = function (mongoose) {
             type: String,
             default: ''
         },
+        user_like:{
+            type:Number,
+            default:0
+        },
         hashed_password: String,
         created_at: String,
         temp_password: String,
@@ -43,6 +47,10 @@ Schema.createSchema = function (mongoose) {
         member_icon_filename: {
             type: String,
             default: ''
+        },
+        registrationId: {
+            type: String,
+            'default': ''
         },
         reg_date: {
             type: Date,

@@ -24,6 +24,10 @@ Schema.createSchema = function (mongoose) {
             type: String,
             'default': ''
         },
+        nickname: {
+            type: String,
+            'default': ''
+        },
         display: {
             type: String,
             'default': ''
