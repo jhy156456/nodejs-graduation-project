@@ -5,6 +5,7 @@ var async = require('async');
 //keep/list
 var keep_list = function(req, res, next) { //router.get('/list', function(req, res, next) {
     var member_seq = req.query.member_seq;
+    console.log("조회하려는 멤버seq : " +req.query.member_seq);
     var user_latitude = req.query.user_latitude;
     var user_longitude = req.query.user_longitude;
     var database = req.app.get('database');
@@ -14,7 +15,7 @@ var keep_list = function(req, res, next) { //router.get('/list', function(req, r
 
     var tasks = [
         function(callback) {
-            database.SoftwareKeepModel.findByreg_date(function(err, results) { //keep등록순 정렬
+            database.SoftwareKeepModel.findByreg_date(member_seq,function(err, results) { //keep등록순 정렬
                 if (err) {
                     console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
                     callback(err, null);

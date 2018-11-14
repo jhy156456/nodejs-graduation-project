@@ -42,8 +42,10 @@ Schema.createSchema = function (mongoose) {
             info_seq: seq
         }).lean().exec(callback);
     });
-    SoftwareKeepSchema.static('findByreg_date', function (callback) {
-        return this.find({}).sort({
+    SoftwareKeepSchema.static('findByreg_date', function (m_seq,callback) {
+        return this.find({
+            member_seq:m_seq
+        }).sort({
             "reg_date": -1
         }).lean().exec(callback);
     });

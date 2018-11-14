@@ -28,7 +28,7 @@ exports.registerUser = (database, name, email, password, sextype, birthday, nick
                 if (err.code == 11000) {
                     reject({
                         status: 409,
-                        message: '이메일이 존재합니다'
+                        message: '닉네임이 존재합니다'
                     });
                 } else {
                     reject({

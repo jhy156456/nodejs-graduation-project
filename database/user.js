@@ -14,7 +14,7 @@ Schema.createSchema = function (mongoose) {
         },
         email: {
             type: String,
-            unique: true
+            default: ''
         },
         phone: {
             type: String,
@@ -22,15 +22,20 @@ Schema.createSchema = function (mongoose) {
         },
         nickname: {
             type: String,
-            default: ''
+            default: '',
+            unique: true
         },
         user_type: {
             type: String,
             default: ''
         },
-        user_like:{
-            type:Number,
-            default:0
+        user_like: {
+            type: Number,
+            default: 0
+        },
+        one_line_description:{
+            type:String,
+            default:''
         },
         hashed_password: String,
         created_at: String,
@@ -77,17 +82,27 @@ Schema.createSchema = function (mongoose) {
             member_icon_filename: 1
         }).lean().exec(callback);
     });
-    UserSchema.static('findByMail', function (email, callback) {
+    UserSchema.static('findByMail', function (email, callback) { //이거로 MyApp User값 셋팅
         return this.find({
             email: email
+        }, {
+           hashed_password:0
         }).lean().exec(callback);
     });
     UserSchema.static('findAll', function (callback) {
         return this.find({}).lean().exec(callback);
     });
-    UserSchema.static('findSupporters', function (start_page, LOADING_SIZE, callback) {
+    UserSchema.static('findByNickName', function (nickName, callback) {
         return this.find({
-            user_type: "Supporters"
+            nickname: nickName
+        }).lean().exec(callback);
+    });
+    UserSchema.static('findSupporters', function (myNickName, start_page, LOADING_SIZE, callback) {
+        return this.find({
+            user_type: "Supporters",
+            nickname: {
+                $ne: myNickName
+            }
         }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
     })
     return UserSchema;

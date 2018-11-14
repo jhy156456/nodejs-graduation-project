@@ -310,7 +310,7 @@ var info_seq = function (req, res, next) { //info/:seq
                         return;
                     }
                     if (result.length > 0) {
-                        console.log("불러온 이미지값" + JSON.stringify(result));
+                        //console.log("불러온 이미지값" + JSON.stringify(result));
                         data[0].image_filename = result[0].filename; //첫화면을 위함,리스트의 첫화면
                         data[0].total_image_filename = result; //총 개수를 위함. 이미지여러개
                         data[0].total_image_filename.sort(function (a, b) { //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
@@ -345,7 +345,7 @@ var info_seq = function (req, res, next) { //info/:seq
                 //그래서 위에 이프엘스에 각각넣어줌 ㅡㅡ 개짜증남정말 ㅡㅡ
                     },
             function (endresults, callback) {
-                //console.log("값 : " + JSON.stringify(endresults[0]));
+                //console.log("인포값 : " + JSON.stringify(endresults[0]));
                 res.json(endresults[0]);
                 callback(null);
                     }
@@ -368,7 +368,7 @@ var addcomment = function (req, res) {
     var paramId = req.body.postId || req.query.postId;
     var paramContents = req.body.contents || req.query.contents;
     var paramWriter = req.body.writer || req.query.writer;
-    var paramcommentWriterIconFileName = req.body.writer_member_icon_filename || req.query.writer_member_icon_filename;
+    var paramcommentWriterIconFileName = req.body.comment_writer_icon_filename || req.query.comment_writer_icon_filename;
 
     console.log("넣으려는 값 : " + JSON.stringify(req.body));
     var database = req.app.get('database');
@@ -395,7 +395,7 @@ var addcomment = function (req, res) {
                     return;
                 }
                 //console.log("댓글 : " + results.comments);
-                // console.log("값 : " + results.comments[results.comments.length-1]._id);
+                console.log("댓글 아이디값 : " + results.comments[results.comments.length-1]._id);
                 return res.status(200).send('' + results.comments[results.comments.length - 1]._id);
             });
 
@@ -443,7 +443,6 @@ function (callback) {
                 },
 function (data, callback) {
                     var count = 0;
-                    console.log("data.length : " + data.length)
                     data.forEach((item, index) => { //같은원리 아닌가? for로 하면 안되는이유는??
                         database.SoftwareInfoImageModel.findByseq(item.seq, function (err, result) {
                             if (err) {

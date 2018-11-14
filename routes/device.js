@@ -349,7 +349,6 @@ var sendChatAlarm = function (req, res) {
 
                     return;
                 }*/
-
                 // node-gcm을 이용해 전송
                 var message = new fcm.Message({
                     priority: 'high',
@@ -358,9 +357,7 @@ var sendChatAlarm = function (req, res) {
                 message.addData('command', 'show');
                 message.addData('type', 'text/plain');
                 message.addData('data', paramData);
-
                 var sender = new fcm.Sender(process.env.FCM_API_KEY);
-
                 sender.send(message, regIds, function (err, result) {
                     if (err) {
                         console.error('푸시 전송 시도 중 에러 발생 : ' + err.stack);
@@ -371,22 +368,16 @@ var sendChatAlarm = function (req, res) {
                         res.write('<h2>푸시 전송 시도 중 에러 발생</h2>');
                         res.write('<p>' + err.stack + '</p>');
                         res.end();
-
                         return;
                     }
-
                     //console.dir(result);
-
                     res.writeHead('200', {
                         'Content-Type': 'text/html;charset=utf8'
                     });
                     res.write('<h2>푸시 메시지 전송 성공</h2>');
                     console.log('<h2>푸시 메시지 전송 성공</h2>');
                     res.end();
-
                 });
-
-
             } else {
                 console.log("리스트 조회 실패")
                 res.writeHead('200', {

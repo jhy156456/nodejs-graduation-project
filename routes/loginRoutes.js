@@ -245,6 +245,7 @@ function checkToken(req) {
 var getSupporters = function (req, res) {
     console.log('getSupporters 호출됨.');
     var userType = req.params.user_type;
+    var myNickName = req.query.my_nick_name;
     var current_page = req.query.current_page || 0;
     var start_page = current_page * LOADING_SIZE;
     console.log("유저타입 : " + userType);
@@ -253,7 +254,7 @@ var getSupporters = function (req, res) {
     // 데이터베이스 객체가 초기화된 경우
     if (database.db) {
         // 1. 모든 단말 검색
-        database.UserModel.findSupporters(start_page, LOADING_SIZE, function (err, results) {
+        database.UserModel.findSupporters(myNickName, start_page, LOADING_SIZE, function (err, results) {
             if (err) {
                 console.error('서포터즈 리스트 조회중 에러발생 : ' + err.stack);
                 res.end();
@@ -337,6 +338,44 @@ var userDisLike = function (req, res) {
     }
 }
 
+
+
+var isPastKaKaoLogin = function (req, res) {
+
+    console.log('isPastKaKaoLogin 호출됨.');
+    var database = req.app.get('database');
+    var paramEmail = req.params.email;
+    var paramName = req.params.name;
+    console.log("네임 : " + paramName);
+    // 데이터베이스 객체가 초기화된 경우
+    if (database.db) {
+        database.UserModel.findOne({
+            email: paramEmail,
+            name: paramName
+        }, function (err2, result) {
+            if (err2) {
+                console.log('카카오로그인 검색 에러');
+                console.dir(err2);
+                return;
+            }
+            //result값이 null이면 과거에 카카오로그인한적 없던것
+            //result값이 null이 아니면 과거에 카카오로그인 한적이 있던것
+            console.log("카카오로그인값 : " + JSON.stringify(result))
+            res.status(200).send(result)
+            res.end()
+
+        });
+    } else {
+        console.log('데이터베이스 연결 실패');
+        res.end();
+    }
+
+
+}
+
+module.exports.isPastKaKaoLogin = isPastKaKaoLogin;
+module.exports.userDisLike = userDisLike;
+module.exports.userLike = userLike;
 module.exports.getSupporters = getSupporters;
 module.exports.checkDuplicatedNickName = checkDuplicatedNickName;
 module.exports.getUser = getUser;

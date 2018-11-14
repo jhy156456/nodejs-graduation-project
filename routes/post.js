@@ -98,19 +98,14 @@ var listpost = function (req, res) {
 
     var current_page = req.query.current_page || 0;
     var start_page = current_page * LOADING_SIZE;
-
-
-    var paramPage = req.body.page || req.query.page;
-    var paramPerPage = req.body.perPage || req.query.perPage;
-
-    console.log('요청 파라미터 : ' + paramPage + ', ' + paramPerPage);
-
+    var userId = req.body.user_id || req.query.user_id;
     var database = req.app.get('database');
 
     // 데이터베이스 객체가 초기화된 경우
     if (database.db) {
         // 1. 글 리스트
         var options = {
+            writer: userId,
             start_page: start_page,
             LOADING_SIZE: LOADING_SIZE
         }
@@ -215,8 +210,9 @@ var showpost = function (req, res) {
 };
 var removeComment = function (req, res) {
     console.log('removeComment 호출됨');
-
-
+    /*댓글 등록은 게시판이 나눠져있는데 삭제는 post.js에 같이해놓음
+    bestfoodinfo: 1008, notification: 1004*/
+    var from = req.body.from || req.query.from || req.params.from;
     var commentId = req.body.commentId || req.query.commentId || req.params.commentId;
     var postId = req.body.postId || req.query.postId || req.params.postId;
     console.log("포스트아이디 : " + postId);
@@ -224,31 +220,55 @@ var removeComment = function (req, res) {
     var database = req.app.get('database');
     if (database.db) {
 
-
-        database.PostModel.findById(postId,
-            function (err, results) {
-                if (err) {
-                    console.error('에러내용 : ' + err.stack);
-                    res.end();
-                    return;
-                }
-                if (results) {
-                   // console.log("결과값 : " + JSON.stringify(results))
-                    results.removeComment(commentId, function (err, results) {
-                        if(err){
-                            console.log("댓글 삭제 실패");
-                            res.end();
-                            return;
-                        }
-                        console.log("댓글 삭제 성공")
-                        return res.status(200).end();
-                    })
-                }else{
-                    console.log("해당아이디로 등록된 게시글 없음")
-                }
-                //return res.redirect('/process/showpost/' + paramId);
-            });
-
+        if (from == 1004) {
+            database.PostModel.findById(postId,
+                function (err, results) {
+                    if (err) {
+                        console.error('에러내용 : ' + err.stack);
+                        res.end();
+                        return;
+                    }
+                    if (results) {
+                        // console.log("결과값 : " + JSON.stringify(results))
+                        results.removeComment(commentId, function (err, results) {
+                            if (err) {
+                                console.log("댓글 삭제 실패");
+                                res.end();
+                                return;
+                            }
+                            console.log("post_schema댓글 삭제 성공")
+                            return res.status(200).end();
+                        })
+                    } else {
+                        console.log("해당아이디로 등록된 게시글 없음")
+                    }
+                    //return res.redirect('/process/showpost/' + paramId);
+                });
+        } else if (from == 1008) {
+            database.SoftwareInfoModel.findById(postId,
+                function (err, results) {
+                    if (err) {
+                        console.error('에러내용 : ' + err.stack);
+                        res.end();
+                        return;
+                    }
+                    if (results) {
+                        // console.log("결과값 : " + JSON.stringify(results))
+                        results.removeComment(commentId, function (err, results) {
+                            if (err) {
+                                console.log("댓글 삭제 실패");
+                                res.end();
+                                return;
+                            }
+                            console.log("software_schema 댓글 삭제 성공")
+                            return res.status(200).end();
+                        })
+                    } else {
+                        console.log("해당아이디로 등록된 게시글 없음")
+                    }
+                    //return res.redirect('/process/showpost/' + paramId);
+                });
+        }
     } else {
         console.log("데이터베이스 오류");
         res.end();
@@ -266,7 +286,7 @@ var addcomment = function (req, res) {
     var paramId = req.body.postId || req.query.postId;
     var paramContents = req.body.contents || req.query.contents;
     var paramWriter = req.body.writer || req.query.writer;
-     var paramcommentWriterIconFileName = req.body.writer_member_icon_filename || req.query.writer_member_icon_filename;
+    var paramcommentWriterIconFileName = req.body.comment_writer_icon_filename || req.query.comment_writer_icon_filename;
     console.log('넣을것 : ' + paramId + ', ' + paramContents + ', ' +
         paramWriter);
 
@@ -281,7 +301,7 @@ var addcomment = function (req, res) {
                     'comments': {
                         'contents': paramContents,
                         'writer': paramWriter,
-                        'comment_writer_icon_filename':paramcommentWriterIconFileName
+                        'comment_writer_icon_filename': paramcommentWriterIconFileName
                     }
                 }
             }, {
@@ -303,7 +323,7 @@ var addcomment = function (req, res) {
                     return;
                 }
                 console.log("댓글 저장 성공");
-                return res.status(200).send('' + results.comments[results.comments.length-1]._id);
+                return res.status(200).send('' + results.comments[results.comments.length - 1]._id);
                 //return res.redirect('/process/showpost/' + paramId);
             });
 

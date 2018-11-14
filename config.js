@@ -91,7 +91,7 @@ module.exports = {
         },
         {
             file: './chat',
-            path: '/room/android',
+            path: '/room/android/newroom',
             method: 'post_room_android',
             type: 'post'
         },
@@ -227,7 +227,7 @@ module.exports = {
             type: 'post'
         }
         //Doit 알림구현 끝
-//베스트푸드책 구현 시작
+        //베스트푸드책 구현 시작
         , {
             file: './member',
             path: '/member/:email',
@@ -310,7 +310,7 @@ module.exports = {
         //베스트푸드책 구현 끝
         ////////////////////////////////////////////로그인 시작
 
-                        , { //wantMemberSeq로 원하는 멤버의 프로필 조회
+   , { //wantMemberSeq로 원하는 멤버의 프로필 조회
             file: './loginRoutes',
             path: '/users/:seq',
             method: 'getUser',
@@ -356,6 +356,24 @@ module.exports = {
             path: '/users/:id/password',
             method: 'six',
             type: 'post'
+        }
+                        , {
+            file: './loginRoutes',
+            path: '/users/like/:id',
+            method: 'userLike',
+            type: 'get'
+        }
+        , {
+            file: './loginRoutes',
+            path: '/users/dislike/:id',
+            method: 'userDisLike',
+            type: 'get'
+        }, {
+            file: './loginRoutes',
+            path: '/users/kakao/:email/:name',
+            method: 'isPastKaKaoLogin',
+            type: 'get'
+
         }
         ]
 }

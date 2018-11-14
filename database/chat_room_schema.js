@@ -55,6 +55,14 @@ Schema.createSchema = function (mongoose) {
         },
     });
 
+    roomSchema.static('findById', function (id, start_page, LOADING_SIZE, callback) {
+        return this.find({
+            room: id
+        }).sort({
+            "createdAt": -1
+        }).skip(start_page).limit(LOADING_SIZE).lean().exec(callback);
+    });
+
     roomSchema.static('findByuserNickName', function (userNickName, start_page, LOADING_SIZE, callback) {
         return this.find({
             $or: [{

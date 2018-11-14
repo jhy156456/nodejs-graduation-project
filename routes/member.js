@@ -16,6 +16,7 @@ var email = function (req, res, next) { //router.get('/:phone', function(req, re
                 return;
             }
             if (results.length > 0) {
+                console.log("로그인시 반환하려는 값 : "+JSON.stringify(results));
                 res.json(results[0]);
                 res.end();
             } else {
