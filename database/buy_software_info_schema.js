@@ -115,6 +115,13 @@ Schema.createSchema = function (mongoose) {
         post_member_icon_filename: {
             type: String,
             default: ""
+        },
+        created_at: {
+            type: Date,
+            index: {
+                unique: false
+            },
+            'default': Date.now
         }
     });
 

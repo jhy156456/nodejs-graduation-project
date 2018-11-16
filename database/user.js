@@ -33,9 +33,9 @@ Schema.createSchema = function (mongoose) {
             type: Number,
             default: 0
         },
-        one_line_description:{
-            type:String,
-            default:''
+        one_line_description: {
+            type: String,
+            default: '한줄설명을 입력하세요'
         },
         hashed_password: String,
         created_at: String,
@@ -86,7 +86,8 @@ Schema.createSchema = function (mongoose) {
         return this.find({
             email: email
         }, {
-           hashed_password:0
+            hashed_password: 0,
+            registrationId: 0
         }).lean().exec(callback);
     });
     UserSchema.static('findAll', function (callback) {

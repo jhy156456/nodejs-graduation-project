@@ -16,7 +16,7 @@ var email = function (req, res, next) { //router.get('/:phone', function(req, re
                 return;
             }
             if (results.length > 0) {
-                console.log("로그인시 반환하려는 값 : "+JSON.stringify(results));
+                console.log("로그인시 반환하려는 값 : " + JSON.stringify(results));
                 res.json(results[0]);
                 res.end();
             } else {
@@ -94,33 +94,31 @@ var member_phone = function (req, res) { //router.post('/phone', function(req, r
 
 //member/info
 var member_info = function (req, res) { //router.post('/info', function(req, res) {
-    var phone = req.body.phone;
-    var name = req.body.name;
+
     var sextype = req.body.sextype;
     var birthday = req.body.birthday;
+    var oneLineDescription = req.body.one_line_description;
+    var nickName = req.body.nickname;
+
 
     console.log(name, sextype, birthday, phone);
     var database = req.app.get('database');
 
     if (database.db) {
-        addmember(database, phone, name, sextype, birthday, function (err, result) {
+        database.UserModel.where({
+            nickname: nickName
+        }).update({
+            one_line_description: oneLineDescription,
+            birthday: birthday,
+            sextype: sextype
+        }, function (err, result) {
             if (err) {
-                console.error('멤버 추가 중 에러 발생 : ' + err.stack);
-                console.log('<h2>핸드폰 추가 중 에러 발생</h2>');
-                console.log('<p>' + err.stack + '</p>');
-                res.end();
+                callback(err, null);
                 return;
             }
-
-            if (result) {
-                console.log('멤버 추가 성공');
-                console.log('seq?? : ' + result.seq);
-                res.status(200).send('' + result.seq);
-                res.end();
-            } else {
-                console.log.write('<h2>멤버 추가  실패</h2>');
-                res.end();
-            }
+            console.log('프로필 업데이트 성공');
+            res.status(200).send('' + result.seq);
+            res.end();
         });
     } else {
         console.log('<h2>데이터베이스 연결 실패</h2>');
@@ -215,29 +213,17 @@ var addmember_phone = function (database, phone, callback) {
         }
     });
 }
-var addmember = function (database, phone, name, sextype, birthday, callback) {
+var addmember = function (database, nickName, sextype, birthday, oneLineDescription, callback) {
     console.log('addmember 호출됨.');
     // bestfood_member 인스턴스 생성
-    database.UserModel.findByPhone(phone, function (err, results) {
+    database.UserModel.findByNickName(nickName, function (err, results) {
         if (err) {
-            console.error('에러얌 :' + err.stack);
+            console.error('에러얌:' + err.stack);
             callback(err, null);
             return;
         }
         if (results.length > 0) {
-            database.UserModel.where({
-                phone: phone
-            }).update({
-                name: name,
-                birthday: birthday,
-                sextype: sextype
-            }, function (err) {
-                if (err) {
-                    callback(err, null);
-                    return;
-                }
-            });
-            callback(null, results[0]);
+
 
         } else {
             var mem = new database.UserModel({

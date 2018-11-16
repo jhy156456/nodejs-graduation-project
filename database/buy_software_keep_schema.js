@@ -19,7 +19,14 @@ Schema.createSchema = function (mongoose) {
         reg_date: {
             type: Date,
             default: Date.now
-        }
+        },
+        created_at: {
+            type: Date,
+            index: {
+                unique: false
+            },
+            'default': Date.now
+        },
 
     });
 
@@ -42,9 +49,9 @@ Schema.createSchema = function (mongoose) {
             info_seq: seq
         }).lean().exec(callback);
     });
-    SoftwareKeepSchema.static('findByreg_date', function (m_seq,callback) {
+    SoftwareKeepSchema.static('findByreg_date', function (m_seq, callback) {
         return this.find({
-            member_seq:m_seq
+            member_seq: m_seq
         }).sort({
             "reg_date": -1
         }).lean().exec(callback);

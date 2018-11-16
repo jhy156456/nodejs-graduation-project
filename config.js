@@ -32,8 +32,6 @@ module.exports = {
             schemaName: 'DeviceSchema',
             modelName: 'DeviceModel'
         },
-
-
         {
             file: './buy_software_info_schema',
             collection: 'software',

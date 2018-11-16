@@ -26,7 +26,14 @@ Schema.createSchema = function (mongoose) {
         reg_date: {
             type: Date,
             default: Date.now
-        }
+        },
+        created_at: {
+            type: Date,
+            index: {
+                unique: false
+            },
+            'default': Date.now
+        },
 
     });
 

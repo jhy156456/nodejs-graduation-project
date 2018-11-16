@@ -113,6 +113,8 @@ var keep_list = function(req, res, next) { //router.get('/list', function(req, r
 var keep_info_seq_post = function(req, res, next) { //router.post('/:member_seq/:info_seq', function(req, res, next) {
     var member_seq = req.params.member_seq;
     var info_seq = req.params.info_seq;
+    console.log("즐겨찾기하려는 멤버시큐 : " + member_seq);
+    console.log("즐겨찾기하려는 인포시큐 : " + info_seq);
     var database = req.app.get('database');
     if (!member_seq || !info_seq) {
         return res.sendStatus(400);

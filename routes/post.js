@@ -125,7 +125,7 @@ var listpost = function (req, res) {
             }
 
             if (results) {
-                //console.log("문의사항 값:" + JSON.stringify(results))
+                console.log("문의사항 값:" + JSON.stringify(results))
                 res.status(200).json(results);
                 res.end();
             } else {

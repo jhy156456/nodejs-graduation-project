@@ -1,8 +1,4 @@
 var Schema = {};
-
-
-
-
 Schema.createSchema = function (mongoose) {
     var roomSchema = mongoose.Schema({
 

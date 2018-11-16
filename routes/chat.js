@@ -46,7 +46,7 @@ var getChatUserNickName = async function (req, res, next) {
                         if (data.length == 0)
                             return callback("값없음")
                         if (result.length > 0) {
-                            console.log("오우너측 불러온것 : " + result[0].member_icon_filename)
+                           // console.log("오우너측 불러온것 : " + result[0].member_icon_filename)
                             data[index].owner_member_icon_file_name = result[0].member_icon_filename;
                         }
                         count++;
@@ -64,7 +64,7 @@ var getChatUserNickName = async function (req, res, next) {
                         if (data.length == 0)
                             return callback("값없음")
                         if (result.length > 0) {
-                            console.log("참가자측 불러온것 : " + result[0].member_icon_filename)
+                            //console.log("참가자측 불러온것 : " + result[0].member_icon_filename)
                             data[index].participant_member_icon_file_name = result[0].member_icon_filename;
                         }
                         count++;
@@ -76,7 +76,7 @@ var getChatUserNickName = async function (req, res, next) {
                 });
             },
             function (endresults, callback) {
-                console.log("채팅 리스트 값 : " + JSON.stringify(endresults));
+               // console.log("채팅 리스트 값 : " + JSON.stringify(endresults));
                 res.status(200).json(endresults);
                 res.end();
                 callback(null);
@@ -131,7 +131,7 @@ var post_room = async function (req, res, next) {
         var newRoom = await room.save();
         var io = req.app.get('io');
 
-        console.log("참가자 : " + req.body.participant);
+        //console.log("참가자 : " + req.body.participant);
         io.of('/room').to(req.body.participant).emit('newRoom', newRoom); //채팅개설자가 나일때
         //else io.of('/room').to(req.body.nickname).emit('newRoom', newRoom);//채팅개설자가 내가아닐때
 
@@ -205,7 +205,7 @@ var getParticipant = async function (req, res, next) {
         results = await database.Room.find({
             _id: req.params.id
         });
-        console.log("참가자 수" + results[0]._doc.participant_count)
+        //console.log("참가자 수" + results[0]._doc.participant_count)
         res.status(200).send('' + results[0]._doc.participant_count);
         /*        res.status(200).send(results[0]._doc.participant_count); 로 보내면
                 express deprecated res.send(status): Use res.sendStatus(status) instead routes\chat.js:152:25
@@ -225,10 +225,10 @@ var post_room_id_chat = async function (req, res) {
     var sender = "";
     var receiver = "";
     var results;
-    console.log("채팅전송시작 " + req.params.id + "//" + req.body.user + "//" + req.body.chat);
+    //console.log("채팅전송시작 " + req.params.id + "//" + req.body.user + "//" + req.body.chat);
     if (req.body.sender == null) sender = "zxcvb"; //nickName = "비회원";
     else sender = req.body.sender;
-    console.log("req.body.receiver : " + req.body.receiver)
+    //console.log("req.body.receiver : " + req.body.receiver)
     if (req.body.receiver == null) receiver = "asd"; //인터넷상에서 리시버랑 센더어케하는지모르겠어서 우선이렇게임시방편
     else receiver = req.body.receiver;
     try {
@@ -253,7 +253,7 @@ var post_room_id_chat = async function (req, res) {
                     return;
                 }
                 console.log('exit 여부 수정 성공');
-                console.log("newRoom값 : " + JSON.stringify(results2));
+                //console.log("newRoom값 : " + JSON.stringify(results2));
                 //room네임스페이스에 리시버닉네임으로되어있는 룸에게 전송
                 req.app.get('io').of('/room').to(receiver).emit('newRoom', results2);
             });
@@ -268,8 +268,8 @@ var post_room_id_chat = async function (req, res) {
         var senderMemberIconFileName = "";
         var receiverId = "";
         var receiverMemberIconFileName = "";
-        console.log("센더 : " + sender);
-        console.log("리시버 : " + receiver);
+        //console.log("센더 : " + sender);
+        //console.log("리시버 : " + receiver);
         database.UserModel.findOne({
             nickname: sender
         }, function (err, result) {
@@ -277,7 +277,7 @@ var post_room_id_chat = async function (req, res) {
                 console.log("_id조회를 위한 sender닉네임으로 User검색 실패");
                 return; //return하면 post_room_id_chat함수를나가는건지 이함수를 나가는건지 확인
             }
-            console.log("asdf : " + JSON.stringify(result));
+            //console.log("asdf : " + JSON.stringify(result));
             senderId = result._id;
             senderMemberIconFileName = result.member_icon_filename;
             database.UserModel.findOne({
@@ -297,7 +297,7 @@ var post_room_id_chat = async function (req, res) {
                     sender_id: senderId,
                     receiver_id: receiverId
                 });
-                console.log("저장할 chat값 : " + JSON.stringify(chat));
+                //console.log("저장할 chat값 : " + JSON.stringify(chat));
                 await database.Room.findOneAndUpdate({
                     _id: req.params.id
                 }, {
@@ -328,7 +328,7 @@ var post_room_id_chat = async function (req, res) {
                 var roomModify = new Object();
                 roomModify.last_chat_contents = req.body.chat;
                 roomModify._id = req.params.id;
-                console.log("보낼 req.params.id값 : " + req.params.id + "chat값 : " + chat)
+                //console.log("보낼 req.params.id값 : " + req.params.id + "chat값 : " + chat)
                 req.app.get('io').of('/room').to(receiver).emit('lastChatReceive', roomModify);
 
 

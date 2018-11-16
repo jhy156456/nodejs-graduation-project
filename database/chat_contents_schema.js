@@ -1,5 +1,4 @@
 var Schema = {};
-
 Schema.createSchema = function (mongoose) {
     var chatSchema = mongoose.Schema({
         room: {
@@ -30,10 +29,14 @@ Schema.createSchema = function (mongoose) {
             default: Date.now,
         },
     });
-    chatSchema.static('list', function (roomId,start_page,LOADING_SIZE, callback) {
+    chatSchema.static('list', function (roomId, start_page, LOADING_SIZE, callback) {
         return this.find({
             room: roomId
-        }).populate('sender_id',{member_icon_filename:1}).populate('receiver_id',{member_icon_filename:1}).sort({
+        }).populate('sender_id', {
+            member_icon_filename: 1
+        }).populate('receiver_id', {
+            member_icon_filename: 1
+        }).sort({
             "createdAt": -1
         }).skip(start_page).limit(LOADING_SIZE).lean().exec(callback);
     });

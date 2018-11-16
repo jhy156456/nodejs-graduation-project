@@ -118,14 +118,26 @@ SchemaObj.createSchema = function (mongoose) {
             this.findOne({
                     _id: id
                 })
-                .populate('writer', 'name provider email')
+                .populate('writer', {
+                    email: 1,
+                    _id: 1,
+                    name: 1,
+                    nickname: 1
+                })
                 .exec(callback);
         },
         list: function (options, callback) {
             var criteria = options.criteria || {};
 
-            this.find(criteria)
-                .populate('writer', 'name provider email')
+            this.find({
+                    writer: options.writer
+                })
+                .populate('writer', {
+                    email: 1,
+                    _id: 1,
+                    name: 1,
+                    nickname: 1
+                })
                 .sort({
                     'created_at': -1
                 })
