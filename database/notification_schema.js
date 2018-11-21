@@ -12,87 +12,18 @@ var SchemaObj = {};
 SchemaObj.createSchema = function (mongoose) {
 
     // 글 스키마 정의
-    var orderSchema = mongoose.Schema({
-        buyerid: {
-            type: Number,
-            default: 0
-        },
-        sellerid: {
-            type: Number,
-            default: 0
-        },
-        post_member_icon_file_name: {
+    var PostSchema = mongoose.Schema({
+        title: {
             type: String,
-            default: ''
-        },
-        info_first_image_file_name: {
-            type: String,
-            default: ''
-        },
-        info_title: {
-            type: String,
-            default: ''
-        },
-        productid: {
-            type: Number,
-            default: 0
-        },
-        buyer_phone: {
-            type: String,
-            default: ''
-        },
-        card_holder: {
-            type: String,
-            default: ''
-        },
-        card_number: {
-            type: String,
-            default: ''
-        },
-        seller_nickname: {
-            type: String,
-            default: ''
-        },
-        buyer_nickname: {
-            type: String,
-            default: ''
-        },
-        pay_method: {
-            type: String,
-            default: ''
-        },
-        buy_method: {
-            type: String,
-            default: ''
-        },
-        post_price: {
-            type: String,
-            default: ''
-        },
-        deposit_name: {
-
-        },
-        deposit_date: {
-            type: Date,
-            index: {
-                unique: false
-            },
-            'default': Date.now
-        },
+            trim: true,
+            'default': ''
+        }, // 글 제목
         contents: {
             type: String,
             trim: true,
             'default': ''
         }, // 글 내용
-
         created_at: {
-            type: Date,
-            index: {
-                unique: false
-            },
-            'default': Date.now
-        },
-        updated_at: {
             type: Date,
             index: {
                 unique: false
@@ -102,11 +33,11 @@ SchemaObj.createSchema = function (mongoose) {
     });
 
     // 필수 속성에 대한 'required' validation
-    //orderSchema.path('title').required(true, '글 제목을 입력하셔야 합니다.');
-    //orderSchema.path('contents').required(true, '글 내용을 입력하셔야 합니다.');
+    PostSchema.path('title').required(true, '글 제목을 입력하셔야 합니다.');
+    PostSchema.path('contents').required(true, '글 내용을 입력하셔야 합니다.');
 
     // 스키마에 인스턴스 메소드 추가
-    orderSchema.methods = {
+    PostSchema.methods = {
         savePost: function (callback) { // 글 저장
             var self = this;
 
@@ -138,34 +69,54 @@ SchemaObj.createSchema = function (mongoose) {
         }
     }
 
-    orderSchema.statics = {
+    PostSchema.statics = {
         // ID로 글 찾기
         load: function (id, callback) {
             this.findOne({
                     _id: id
                 })
-                .populate('writer', 'name provider email')
+                .populate('writer', {
+                    email: 1,
+                    _id: 1,
+                    name: 1,
+                    nickname: 1
+                })
                 .exec(callback);
         },
         list: function (options, callback) {
             var criteria = options.criteria || {};
 
-            this.find({
-                    buyer_nickname: options.buyer_nickname
-                })
+            this.find({})
                 .sort({
                     'created_at': -1
                 })
                 .limit(Number(options.LOADING_SIZE))
                 .skip(options.start_page)
                 .exec(callback);
+        },
+        incrHits: function (id, callback) {
+            var query = {
+                _id: id
+            };
+            var update = {
+                $inc: {
+                    hits: 1
+                }
+            };
+            var options = {
+                upsert: true,
+                'new': true,
+                setDefaultsOnInsert: true
+            };
+
+            this.findOneAndUpdate(query, update, options, callback);
         }
     }
 
-    console.log('orderSchema 정의함.');
+    console.log('PostSchema 정의함.');
 
-    return orderSchema;
+    return PostSchema;
 };
 
-// module.exports에 orderSchema 객체 직접 할당
+// module.exports에 PostSchema 객체 직접 할당
 module.exports = SchemaObj;

@@ -13,6 +13,7 @@ var LOADING_SIZE = 20;
 
 var getUser = function (req, res) {
     var seq = req.params.seq;
+    var mySeq = req.query.seq;
     var database = req.app.get('database');
     if (database.db) {
         database.UserModel.findBySeq(seq, function (err, results) {

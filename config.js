@@ -3,6 +3,12 @@ module.exports = {
     db_url: 'mongodb://jhy156456:vmflsxj1@ds237192.mlab.com:37192/graduation_project',
     db_schemas: [
         {
+            file: './notification_schema',
+            collection: 'notification',
+            schemaName: 'NotificationSchema',
+            modelName: 'NotificationModel'
+        },
+        {
             file: './chat_contents_schema',
             collection: 'chat',
             schemaName: 'chatSchema',
@@ -67,7 +73,18 @@ module.exports = {
 	],
 
     route_info: [
-
+        {
+            file: './buy_software',
+            path: '/food/info/remove',
+            method: 'removeInfo',
+            type: 'get'
+        },
+        {
+            file: './notification',
+            path: '/Notification/list',
+            method: 'listNotification',
+            type: 'get'
+        },
         //<== 채팅라우터 시작 ==>
         {
             file: './chat',
@@ -273,6 +290,17 @@ module.exports = {
             file: './buy_software',
             path: '/food/list',
             method: 'list',
+            type: 'get'
+        }
+                , {
+            file: './buy_software',
+            path: '/food/list/tag',
+            method: 'listwithTag',
+            type: 'get'
+        }, {
+            file: './buy_software',
+            path: '/order/list',
+            method: 'listOrder',
             type: 'get'
         }
         , { //등록된 게시글 닉네임 클릭 후 프로필보기

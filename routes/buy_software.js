@@ -11,7 +11,7 @@ var searchPost = function (req, res, next) {
     if (database.db) {
         var tasks = [
 function (callback) {
-                database.SoftwareInfoModel.findBySearchKeyWord(searchKeyWord,start_page, LOADING_SIZE, post_category, function (err, results) {
+                database.SoftwareInfoModel.findBySearchKeyWord(searchKeyWord, start_page, LOADING_SIZE, post_category, function (err, results) {
                     if (err) {
                         console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
                         callback(err, null);
@@ -92,17 +92,18 @@ function (endresults, callback) {
 }
 
 
-
-
-
-
-
-
 //등록된 게시글 닉네임 클릭 후 프로필보기
+/*
+내가 (로그인한상태) 상대방프로필보기누르면 상대방이 즐겨찾기한내용들도 같이 추가가됩니다
+이건어떻게해야할까요?
+
+
+*/
+
 var postedList = function (req, res, next) {
     var member_seq = req.query.member_seq;
     var current_page = req.query.current_page || 0;
-
+    var mySeq = req.query.my_seq;
     console.log("current_page : " + current_page)
     console.log("보고자 하는 프로필의 seq : " + member_seq)
     var start_page = current_page * LOADING_SIZE;
@@ -158,7 +159,7 @@ function (data, callback) {
                             return;
                         }
                         if (result.length > 0) {
-                            if (parseInt(member_seq) == parseInt(result[0].member_seq) && result.length != 0) {
+                            if (parseInt(mySeq) == parseInt(result[0].member_seq) && result.length != 0) {
                                 data[index].is_keep = 'true';
                             } else {
                                 data[index].is_keep = 'false';
@@ -172,7 +173,7 @@ function (data, callback) {
                 });
                     },
 function (endresults, callback) {
-                //console.log("postedList값 : " + JSON.stringify(endresults));
+                console.log("postedList값 : " + JSON.stringify(endresults));
                 res.status(200).json(endresults);
                 res.end();
                 callback(null);
@@ -196,17 +197,16 @@ var info = function (req, res, next) { //info
     var post_member_icon_filename = req.body.post_member_icon_filename;
     var name = req.body.name;
     var tel = req.body.tel;
-    var address = req.body.address;
-    var latitude = req.body.latitude;
-    var longitude = req.body.longitude;
     var post_nickname = req.body.post_nickname;
     var description = req.body.description;
     var os = req.body.os;
     var post_category = req.body.post_category;
     var database = req.app.get('database');
+    var postTag = req.body.post_tag;
 
+    console.log("포스트태그값 : " + postTag);
     if (database.db) {
-        addfoodinfo(database, post_member_icon_filename, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, post_category, function (err, result) {
+        addfoodinfo(database, post_member_icon_filename, member_seq, name, tel, description, post_nickname, os, post_category, postTag, function (err, result) {
             if (err) {
                 console.error('맛집정보 저장 중 에러 발생 : ' + err.stack);
                 console.log('<h2>맛집정보 저장 중 에러 발생</h2>');
@@ -395,7 +395,7 @@ var addcomment = function (req, res) {
                     return;
                 }
                 //console.log("댓글 : " + results.comments);
-                console.log("댓글 아이디값 : " + results.comments[results.comments.length-1]._id);
+                console.log("댓글 아이디값 : " + results.comments[results.comments.length - 1]._id);
                 return res.status(200).send('' + results.comments[results.comments.length - 1]._id);
             });
 
@@ -410,7 +410,7 @@ var addcomment = function (req, res) {
 };
 
 var list = function (req, res, next) { //list', function(req, res, next) {
-    
+
     var member_seq = req.query.member_seq;
     var searchKeyWord = req.query.key_word;
     var order_type = req.query.order_type;
@@ -429,7 +429,317 @@ var list = function (req, res, next) { //list', function(req, res, next) {
         if (database.db) {
             var tasks = [
 function (callback) {
-                    database.SoftwareInfoModel.findByreg_date(searchKeyWord , start_page, LOADING_SIZE, post_category, function (err, results) {
+                    database.SoftwareInfoModel.findByreg_date(searchKeyWord, start_page, LOADING_SIZE, post_category, function (err, results) {
+                        if (err) {
+                            console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
+                            callback(err, null);
+                            res.end();
+                            return;
+                        }
+                        if (results.length == 0)
+                            return callback("값에러")
+                        callback(null, results);
+                    });
+                },
+function (data, callback) {
+                    var count = 0;
+                    data.forEach((item, index) => { //같은원리 아닌가? for로 하면 안되는이유는??
+                        database.SoftwareInfoImageModel.findByseq(item.seq, function (err, result) {
+                            if (err) {
+                                console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                                res.end();
+                                return;
+                            }
+                            if (data.length == 0)
+                                return callback("값없음")
+                            if (result.length > 0) {
+                                result.sort(function (a, b) {
+                                    //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
+                                    return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
+                                })
+                                data[index].image_filename = result[0].filename;
+                            }
+                            count++;
+                            if (count == data.length) {
+                                callback(null, data)
+                            }
+                        });
+                    });
+},
+function (data, callback) {
+                    var ctr = 0;
+                    data.forEach((item, index) => {
+                        database.SoftwareKeepModel.findByseqfromInfoseq(item.seq, function (err, result) {
+                            if (err) {
+                                console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                                res.end();
+                                return;
+                            }
+                            if (result.length > 0) {
+                                if (parseInt(member_seq) == parseInt(result[0].member_seq) && result.length != 0) {
+                                    data[index].is_keep = 'true';
+                                } else {
+                                    data[index].is_keep = 'false';
+                                }
+                            } else { //즐겨찾기한게 없으면 안들어오기떄문에 false값을 줄 수 없어서 주기위해 여기에도 추가해야함
+                                data[index].is_keep = 'false';
+                            }
+                            ctr++;
+                            if (ctr == data.length) callback(null, data) // 가져온 info값들의 즐겨찾기 유무조사후 빠져나오기위한 함수
+                        })
+                    });
+                    },
+function (endresults, callback) {
+                    // console.log("값 : " + JSON.stringify(endresults));
+                    res.status(200).json(endresults);
+                    res.end();
+                    callback(null);
+                    }
+        ];
+            async.waterfall(tasks, function (err) {
+                if (err)
+                    console.log('err');
+                else
+                    console.log('done');
+            });
+        }
+    } else if (order_type == 'keep_cnt') { //즐겨찾기정렬
+        console.log("즐겨찾기 정렬 호출 됨");
+        if (database.db) {
+            var tasks = [
+function (callback) {
+                    database.SoftwareInfoModel.findBykeep_cnt(searchKeyWord, start_page, LOADING_SIZE, post_category, function (err, results) {
+                        if (err) {
+                            console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
+                            callback(err, null);
+                            res.end();
+                            return;
+                        }
+                        if (results.length == 0)
+                            return callback("값에러")
+                        callback(null, results);
+                    });
+                },
+function (data, callback) {
+                    var count = 0;
+                    data.forEach((item, index) => { //같은원리 아닌가? for로 하면 안되는이유는??
+                        database.SoftwareInfoImageModel.findByseq(item.seq, function (err, result) {
+                            if (err) {
+                                console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                                res.end();
+                                return;
+                            }
+                            if (data.length == 0)
+                                return callback("값없음")
+                            if (result.length > 0) {
+                                result.sort(function (a, b) {
+                                    //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
+                                    return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
+                                })
+                                data[index].image_filename = result[0].filename;
+                            }
+                            count++;
+                            if (count == data.length) {
+                                callback(null, data)
+                            }
+                        });
+                    });
+},
+function (data, callback) {
+                    var ctr = 0;
+                    data.forEach((item, index) => {
+                        database.SoftwareKeepModel.findByseqfromInfoseq(item.seq, function (err, result) {
+                            if (err) {
+                                console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                                res.end();
+                                return;
+                            }
+                            if (result.length > 0) {
+                                if (parseInt(member_seq) == parseInt(result[0].member_seq) && result.length != 0) {
+                                    data[index].is_keep = 'true';
+                                } else {
+                                    data[index].is_keep = 'false';
+                                }
+                            } else { //즐겨찾기한게 없으면 안들어오기떄문에 false값을 줄 수 없어서 주기위해 여기에도 추가해야함
+                                data[index].is_keep = 'false';
+                            }
+                            ctr++;
+                            if (ctr == data.length) callback(null, data) // 가져온 info값들의 즐겨찾기 유무조사후 빠져나오기위한 함수
+                        })
+                    });
+                    },
+function (endresults, callback) {
+                    //console.log("값 : " + JSON.stringify(endresults));
+                    res.status(200).json(endresults);
+                    res.end();
+                    callback(null);
+                    }
+        ];
+            async.waterfall(tasks, function (err) {
+                if (err)
+                    console.log('err');
+                else
+                    console.log('done');
+            });
+        }
+    } else if (order_type == 'hits_cnt') {
+        console.log("조회순 정렬 호출 됨2");
+        if (database.db) {
+            var tasks = [
+function (callback) {
+                    database.SoftwareInfoModel.findByhits_cnt(searchKeyWord, start_page, LOADING_SIZE, post_category, function (err, results) {
+                        if (err) {
+                            console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
+                            callback(err, null);
+                            res.end();
+                            return;
+                        }
+                        if (results.length == 0)
+                            return callback("값에러")
+                        callback(null, results);
+                    });
+                },
+function (data, callback) {
+                    var count = 0;
+                    data.forEach((item, index) => { //같은원리 아닌가? for로 하면 안되는이유는??
+                        database.SoftwareInfoImageModel.findByseq(item.seq, function (err, result) {
+                            if (err) {
+                                console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                                res.end();
+                                return;
+                            }
+                            if (data.length == 0)
+                                return callback("값없음")
+                            if (result.length > 0) {
+                                result.sort(function (a, b) {
+                                    //사진이 데이터베이스에 0,1,2순서로 저장되지않으므로 정렬해줌
+                                    return a.filename < b.filename ? -1 : a.filename > b.filename ? 1 : 0;
+                                })
+                                data[index].image_filename = result[0].filename;
+                            }
+                            count++;
+                            if (count == data.length) {
+                                callback(null, data)
+                            }
+                        });
+                    });
+},
+function (data, callback) {
+                    var ctr = 0;
+                    data.forEach((item, index) => {
+                        database.SoftwareKeepModel.findByseqfromInfoseq(item.seq, function (err, result) {
+                            if (err) {
+                                console.error('이미지정보 반환 중 오류 발생 :' + err.stack);
+                                res.end();
+                                return;
+                            }
+                            if (result.length > 0) {
+                                if (parseInt(member_seq) == parseInt(result[0].member_seq) && result.length != 0) {
+                                    data[index].is_keep = 'true';
+                                } else {
+                                    data[index].is_keep = 'false';
+                                }
+                            } else { //즐겨찾기한게 없으면 안들어오기떄문에 false값을 줄 수 없어서 주기위해 여기에도 추가해야함
+                                data[index].is_keep = 'false';
+                            }
+                            ctr++;
+                            if (ctr == data.length) callback(null, data) // 가져온 info값들의 즐겨찾기 유무조사후 빠져나오기위한 함수
+                        })
+                    });
+                    },
+function (endresults, callback) {
+                    // console.log("값2 : " + JSON.stringify(endresults));
+                    res.status(200).json(endresults);
+                    res.end();
+                    callback(null);
+                    }
+        ];
+            async.waterfall(tasks, function (err) {
+                if (err) {
+                    res.sendStatus(400);
+                    console.log('err');
+                } else
+                    console.log('done');
+            });
+        }
+    }
+}
+
+
+//////////////////////////////////////////////////내부함수/////////////////////////////////////////////
+var addfoodinfo = function (database, post_member_icon_filename, member_seq, name, tel, description, post_nickname, os, post_category, postTag, callback) {
+    console.log('addinfo 호출됨.');
+
+    var info = new database.SoftwareInfoModel({
+        post_member_icon_filename: post_member_icon_filename,
+        member_seq: member_seq,
+        name: name,
+        tel: tel,
+        os: os,
+        post_nickname: post_nickname,
+        description: description,
+        post_category: post_category,
+        post_tag: postTag
+    });
+
+    // save()로 저장
+    info.save(function (err) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+
+        console.log("데이터 추가함.");
+        callback(null, info);
+
+    });
+}
+//addfoodinfoimage(database, fields.info_seq,files.file.name,fields.image_memo
+var addfoodinfoimage = function (database, info_seq, name, image_memo, callback) {
+    console.log('addinfoimage 호출됨.');
+
+    var infoImage = new database.SoftwareInfoImageModel({
+        info_seq: info_seq,
+        filename: name,
+        image_memo: image_memo
+    });
+
+    // save()로 저장
+    infoImage.save(function (err) {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+
+        console.log("이미지 데이터 추가함.");
+        callback(null, info);
+
+    });
+}
+
+var listwithTag = function (req, res, next) { //list', function(req, res, next) {
+
+    var member_seq = req.query.member_seq;
+    var searchKeyWord = req.query.key_word;
+    var order_type = req.query.order_type;
+    var current_page = req.query.current_page || 0;
+    var start_page = current_page * LOADING_SIZE;
+    var post_category = req.query.post_category;
+    var postTag = req.query.post_tag;
+    console.log("태그값 : " + postTag);
+    var image_filename = '';
+    if (!member_seq) {
+        return res.sendStatus(400);
+    }
+    console.log("FoodList currnet_page : " + req.query.current_page);
+    console.log("FoodList start_page : " + start_page);
+    var database = req.app.get('database');
+    if (order_type == 'reg_date') {
+        console.log("등록순 정렬 호출 됨");
+        if (database.db) {
+            var tasks = [
+function (callback) {
+                    database.SoftwareInfoModel.findByreg_datewithTag(postTag, searchKeyWord, start_page, LOADING_SIZE, post_category, function (err, results) {
                         if (err) {
                             console.error('맛집정보 반환 중 오류 발생 :' + err.stack);
                             callback(err, null);
@@ -665,63 +975,126 @@ function (endresults, callback) {
     }
 }
 
+var listOrder = function (req, res, next) { //list', function(req, res, next) {
 
-//////////////////////////////////////////////////내부함수/////////////////////////////////////////////
-var addfoodinfo = function (database, post_member_icon_filename, member_seq, name, tel, address, latitude, longitude, description, post_nickname, os, post_category, callback) {
-    console.log('addinfo 호출됨.');
+    var member_nick_name = req.query.member_nick_name;
+    var current_page = req.query.current_page || 0;
+    var start_page = current_page * LOADING_SIZE;
+    var image_filename = '';
+    var database = req.app.get('database');
 
-    var info = new database.SoftwareInfoModel({
-        post_member_icon_filename: post_member_icon_filename,
-        member_seq: member_seq,
-        name: name,
-        tel: tel,
-        geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-        },
-        os: os,
-        post_nickname: post_nickname,
-        address: address,
-        description: description,
-        post_category: post_category
-    });
-
-    // save()로 저장
-    info.save(function (err) {
-        if (err) {
-            callback(err, null);
-            return;
+    if (database.db) {
+        // 1. 글 리스트
+        var options = {
+            buyer_nickname: member_nick_name,
+            start_page: start_page,
+            LOADING_SIZE: LOADING_SIZE
         }
+        database.OrderModel.list(options, function (err, results) {
+            if (err) {
+                console.error('게시판 글 목록 조회 중 에러 발생 : ' + err.stack);
+                res.writeHead('200', {
+                    'Content-Type': 'text/html;charset=utf8'
+                });
+                res.write('<h2>게시판 글 목록 조회 중 에러 발생</h2>');
+                res.write('<p>' + err.stack + '</p>');
+                res.end();
+                return;
+            }
 
-        console.log("데이터 추가함.");
-        callback(null, info);
+            if (results) {
+                console.log("주문사항 값:" + JSON.stringify(results))
+                res.status(200).json(results);
+                res.end();
+            } else {
+                res.writeHead('200', {
+                    'Content-Type': 'text/html;charset=utf8'
+                });
+                res.write('<h2>글 목록 조회  실패</h2>');
+                res.end();
+            }
+        });
+    } else {
+        res.writeHead('200', {
+            'Content-Type': 'text/html;charset=utf8'
+        });
+        res.write('<h2>데이터베이스 연결 실패</h2>');
+        res.end();
+    }
 
-    });
-}
-//addfoodinfoimage(database, fields.info_seq,files.file.name,fields.image_memo
-var addfoodinfoimage = function (database, info_seq, name, image_memo, callback) {
-    console.log('addinfoimage 호출됨.');
 
-    var infoImage = new database.SoftwareInfoImageModel({
-        info_seq: info_seq,
-        filename: name,
-        image_memo: image_memo
-    });
-
-    // save()로 저장
-    infoImage.save(function (err) {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-
-        console.log("이미지 데이터 추가함.");
-        callback(null, info);
-
-    });
 }
 
+var removeInfo = function (req, res) {
+    console.log('removeInfo 호출됨');
+    /*댓글 등록은 게시판이 나눠져있는데 삭제는 post.js에 같이해놓음
+    bestfoodinfo: 1008, notification: 1004*/
+    var from = req.body.from || req.query.from || req.params.from;
+    var postId = req.body.post_id || req.query.post_id || req.params.post_id;
+    console.log("포스트아이디 : " + postId);
+    var database = req.app.get('database');
+    if (database.db) {
 
+        if (from == 1004) {
+              database.PostModel.remove({
+                    _id: postId
+                },
+                function (err, results) {
+                    if (err) {
+                        console.log("게시글 삭제 실패");
+                        console.error('에러내용 : ' + err.stack);
+                        res.end();
+                        return;
+                    }
+                    if (results) {
+
+                        console.log("post 게시글 삭제 성공")
+                        res.status(200).send('성공')
+                        res.end();
+                    } else {
+                        console.log("해당아이디로 등록된 게시글 없음")
+                    }
+                    //return res.redirect('/process/showpost/' + paramId);
+                });
+        } else if (from == 1002) {
+            database.SoftwareInfoModel.remove({
+                    _id: postId
+                },
+                function (err, results) {
+                    if (err) {
+                        console.log("게시글 삭제 실패");
+                        console.error('에러내용 : ' + err.stack);
+                        res.end();
+                        return;
+                    }
+                    if (results) {
+
+                        console.log("software 게시글 삭제 성공")
+                        /*
+                        call<String>일경우에 .send를하지않고 res.status(200).end()를하게되면 
+                        안드로이드에서 if (response.isSuccessful()) { 이 if문으로 들어가지않는다 ㅠㅠ
+                        */
+                        res.status(200).send('성공') 
+                        res.end();
+                    } else {
+                        console.log("해당아이디로 등록된 게시글 없음")
+                    }
+                    //return res.redirect('/process/showpost/' + paramId);
+                });
+        }
+    } else {
+        console.log("데이터베이스 오류");
+        res.end();
+    }
+
+
+
+}
+
+
+module.exports.removeInfo = removeInfo;
+module.exports.listOrder = listOrder;
+module.exports.listwithTag = listwithTag;
 module.exports.postedList = postedList;
 module.exports.info = info;
 module.exports.info_image = info_image;

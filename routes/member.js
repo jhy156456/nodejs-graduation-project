@@ -99,9 +99,10 @@ var member_info = function (req, res) { //router.post('/info', function(req, res
     var birthday = req.body.birthday;
     var oneLineDescription = req.body.one_line_description;
     var nickName = req.body.nickname;
+    
+    console.log("바꾸려는값들 : " + JSON.stringify(req.body))
 
-
-    console.log(name, sextype, birthday, phone);
+    
     var database = req.app.get('database');
 
     if (database.db) {
@@ -116,7 +117,8 @@ var member_info = function (req, res) { //router.post('/info', function(req, res
                 callback(err, null);
                 return;
             }
-            console.log('프로필 업데이트 성공');
+            
+            console.log('프로필 업데이트 성공 : '+JSON.stringify(result));
             res.status(200).send('' + result.seq);
             res.end();
         });

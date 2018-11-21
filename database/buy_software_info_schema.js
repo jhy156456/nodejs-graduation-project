@@ -57,6 +57,10 @@ Schema.createSchema = function (mongoose) {
             type: Number,
             default: 0
         },
+        post_tag: [{
+            type: String,
+            default: ''
+        }],
         comments: [{ // 댓글
             contents: {
                 type: String,
@@ -197,18 +201,24 @@ Schema.createSchema = function (mongoose) {
     });
 
     // 즐겨찾기 정렬
-    SoftwareInfoSchema.static('findBykeep_cnt', function (start_page, LOADING_SIZE, post_category, callback) {
+    SoftwareInfoSchema.static('findBykeep_cnt', function (searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
         console.log('bestfood_info_schema의 findBykeep_cnt 호출됨.');
         return this.find({
+            name: {
+                $regex: searchKeyWord
+            },
             post_category: post_category
         }).sort({
             "keep_cnt": -1
         }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
     });
     // 조회순 정렬
-    SoftwareInfoSchema.static('findByhits_cnt', function (start_page, LOADING_SIZE, post_category, callback) {
+    SoftwareInfoSchema.static('findByhits_cnt', function (searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
         console.log('SoftwareInfoSchema의 findByhits_cnt 호출됨.');
         return this.find({
+            name: {
+                $regex: searchKeyWord
+            },
             post_category: post_category
         }).sort({
             "hits": -1
@@ -239,6 +249,55 @@ Schema.createSchema = function (mongoose) {
         this.findOneAndUpdate(query, update, options, callback);
     });
     console.log('bestfood_info_schema 정의함.');
+
+
+
+
+    // 등록순 정렬
+    SoftwareInfoSchema.static('findByreg_datewithTag', function (postTag, searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
+        console.log('SoftwareInfoSchema의 findByreg_date 호출됨.');
+        return this.find({
+            name: {
+                $regex: searchKeyWord
+            },
+            post_category: post_category,
+            "post_tag": {
+                "$all": postTag
+            }
+        }).sort({
+            "reg_date": -1
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
+    });
+    // 즐겨찾기 정렬
+    SoftwareInfoSchema.static('findBykeep_cntwithTag', function (postTag, searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
+        console.log('bestfood_info_schema의 findBykeep_cnt 호출됨.');
+        return this.find({
+            name: {
+                $regex: searchKeyWord
+            },
+            "post_tag": {
+                "$all": postTag
+            },
+            post_category: post_category
+        }).sort({
+            "keep_cnt": -1
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
+    });
+    // 조회순 정렬
+    SoftwareInfoSchema.static('findByhits_cntwithTag', function (postTag, searchKeyWord, start_page, LOADING_SIZE, post_category, callback) {
+        console.log('SoftwareInfoSchema의 findByhits_cnt 호출됨.');
+        return this.find({
+            name: {
+                $regex: searchKeyWord
+            },
+            "post_tag": {
+                "$all": postTag
+            },
+            post_category: post_category
+        }).sort({
+            "hits": -1
+        }).limit(LOADING_SIZE).skip(start_page).lean().exec(callback);
+    });
 
     return SoftwareInfoSchema;
 };
