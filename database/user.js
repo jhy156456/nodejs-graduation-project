@@ -60,6 +60,14 @@ Schema.createSchema = function (mongoose) {
         reg_date: {
             type: Date,
             default: Date.now
+        },
+        is_kakao_user:{
+            type:Boolean,
+            default:false
+        },
+        kakao_id:{
+            type:String,
+            default:''
         }
 
     });

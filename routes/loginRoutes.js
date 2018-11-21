@@ -24,7 +24,7 @@ var getUser = function (req, res) {
                 return;
             }
             if (results.length > 0) {
-                console.log("조회하려는 값 : " + JSON.stringify(results[0]));
+                //console.log("조회하려는 값 : " + JSON.stringify(results[0]));
                 res.json(results[0]);
                 res.end();
             } else {
@@ -93,6 +93,10 @@ var checkDuplicatedNickName = function (req, res) {
 
 var three = function (req, res) {
     var database = req.app.get('database');
+   // console.log("회원가입 값 : " + JSON.stringify(req.body));
+    var memberIconFileName = ''; //일반유저일시 파일네임 빈칸
+    if (req.body.member_icon_filename != null) memberIconFileName = req.body.member_icon_filename; //카카오유저 첫로그인시 파일네임 넘겨줘야함
+
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
@@ -100,6 +104,10 @@ var three = function (req, res) {
     var nickName = req.body.nickname;
     var birthday = req.body.birthday;
     var member_type = req.body.user_type;
+    var isKakaoUser = false;
+    if (req.body.is_kakao_user != null) isKakaoUser = true;
+    var kakaoId=" ";
+    if(req.body.kakao_id!=null) kakaoId = req.body.kakao_id;
     var registrationId;
 
     if (!name || !email || !password || !name.trim() || !email.trim() || !password.trim()) {
@@ -120,9 +128,9 @@ var three = function (req, res) {
             console.log("registrationId : " + results2.registrationId);
             registrationId = results2.registrationId;
             console.log('registrationId 추출 성공');
-            register.registerUser(database, name, email, password, sextype, birthday, nickName, member_type, registrationId)
+            register.registerUser(database, name, email, password, sextype, birthday, nickName, member_type, registrationId, memberIconFileName, isKakaoUser,kakaoId)
                 .then(result => {
-                    res.setHeader('Location', '/users/' + email);
+                    
                     res.status(result.status).json({
                         message: result.message
                     })
@@ -348,10 +356,12 @@ var isPastKaKaoLogin = function (req, res) {
     var paramEmail = req.params.email;
     var paramName = req.params.name;
     console.log("네임 : " + paramName);
+    console.log("이메일 : " + paramEmail);
     // 데이터베이스 객체가 초기화된 경우
     if (database.db) {
+
         database.UserModel.findOne({
-            email: paramEmail,
+            kakao_id: paramEmail,
             name: paramName
         }, function (err2, result) {
             if (err2) {
@@ -361,8 +371,8 @@ var isPastKaKaoLogin = function (req, res) {
             }
             //result값이 null이면 과거에 카카오로그인한적 없던것
             //result값이 null이 아니면 과거에 카카오로그인 한적이 있던것
-            console.log("카카오로그인값 : " + JSON.stringify(result))
-            res.status(200).send(result)
+           // console.log("카카오로그인값 : " + JSON.stringify(result))
+            res.status(200).json(result)
             res.end()
 
         });

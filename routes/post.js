@@ -125,7 +125,7 @@ var listpost = function (req, res) {
             }
 
             if (results) {
-                console.log("문의사항 값:" + JSON.stringify(results))
+                //console.log("문의사항 값:" + JSON.stringify(results))
                 res.status(200).json(results);
                 res.end();
             } else {
@@ -176,7 +176,7 @@ var showpost = function (req, res) {
             }
 
             if (results) {
-                console.log("너가 선택한것 : " + JSON.stringify(results))
+              //  console.log("너가 선택한것 : " + JSON.stringify(results))
                 console.log('trying to update hits.');
 
                 database.PostModel.incrHits(results._doc._id, function (err2, results2) {

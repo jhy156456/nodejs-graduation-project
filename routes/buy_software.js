@@ -173,7 +173,7 @@ function (data, callback) {
                 });
                     },
 function (endresults, callback) {
-                console.log("postedList값 : " + JSON.stringify(endresults));
+              //  console.log("postedList값 : " + JSON.stringify(endresults));
                 res.status(200).json(endresults);
                 res.end();
                 callback(null);
@@ -370,7 +370,7 @@ var addcomment = function (req, res) {
     var paramWriter = req.body.writer || req.query.writer;
     var paramcommentWriterIconFileName = req.body.comment_writer_icon_filename || req.query.comment_writer_icon_filename;
 
-    console.log("넣으려는 값 : " + JSON.stringify(req.body));
+    //console.log("넣으려는 값 : " + JSON.stringify(req.body));
     var database = req.app.get('database');
 
     if (database.db) {

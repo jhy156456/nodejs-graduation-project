@@ -24,7 +24,7 @@ var addOrderCheckItem = function (req, res) {
     var paraCardNumber = req.body.card_number;
     var paramInfoTitle = req.body.info_title;
     var paramPostPrice = req.body.post_price;
-    console.log("바디값 : " + JSON.stringify(req.body))
+  //  console.log("바디값 : " + JSON.stringify(req.body))
     // 데이터베이스 객체가 초기화된 경우
     if (database.db) {
 
@@ -49,7 +49,7 @@ var addOrderCheckItem = function (req, res) {
                 res.end();
                 return;
             }
-            console.log("추가한 주문정보값 : " + JSON.stringify(result))
+            //console.log("추가한 주문정보값 : " + JSON.stringify(result))
             console.log("주문정보 추가함.");
             res.end();
         });

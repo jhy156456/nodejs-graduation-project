@@ -37,24 +37,4 @@
         "socket.io": "^2.1.1"
     }
 }
-/*
-외부에서 localhost에 접속하게 해주는 ngrok
-일반적으로 웹 사이트를 개발할 때에는 로컬에서만 접속할 수 있는 개발용 웹 서버를 켜놓고 테스트하며 개발을 한다. 그러나 외부에서 접속을 못 하기 때문에 몇 가지 불편한 상황이 생긴다.
 
-예를 들어 아직 개발 중인 페이지를 다른 사람에게 보여주기 위해 임시로 서버에 올리거나, 같은 네트워크를 사용한다면 사설 IP로 접속하게 하는데 둘 다 효율적인 방법은 아니다. ngrok를 사용하면 마치 서버에 올려놓은 것 처럼 도메인을 통해 localhost에 접속할 수 있기 때문에 굉장히 편하다.
-
-또 한 가지 사용법은 웹훅을 테스트할 때 사용하는 것이다. 다른 서비스에 웹훅 URL을 설정하면 해당 서비스에서 특정 이벤트가 발생했을 때 URL이 호출되는데 localhost URL을 설정할 수는 없기 때문에 테스트하기가 꽤 까다롭다. ngrok를 사용하면 외부에서 접속할 수 있는 도메인이 제공되기 때문에 localhost로 연결되는 웹훅 URL을 설정할 수 있다.
-
-사용법도 엄청 간단한데, npm으로 설치하고 localhost가 사용하는 포트를 입력해서 실행하면 된다.
-
-$ npm install -g ngrok
-$ ngrok http 3000
-Session Status                online
-Session Expires               7 hours, 51 minutes
-Version                       2.2.8
-Region                        United States (us)
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    http://dd3fd0ea.ngrok.io -> localhost:3000
-Forwarding                    https://dd3fd0ea.ngrok.io -> localhost:3000
-Connections                   ttl     opn     rt1     rt5     p50     p90
-*/
